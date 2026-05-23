@@ -425,13 +425,12 @@
   let placed      = {};       // book -> groupId
   let correct     = new Set();
   let selectedBook = null;    // currently selected book (tap mode)
-
-  // Detect touch device
-  const isTouch = () => window.matchMedia('(hover: none)').matches || ('ontouchstart' in window);
+  let poolOrder   = [];       // stable order for pool chips
 
   // ── INIT ──────────────────────────────────────────────────────────────────
   function init() {
     placed = {}; correct = new Set(); selectedBook = null;
+    poolOrder = shuffle(ALL_BOOKS); // shuffle ONCE at start
     renderGroups();
     renderPool();
     updateScore();
@@ -477,7 +476,7 @@
   function renderPool() {
     const pool = document.getElementById('books-pool');
     pool.innerHTML = '';
-    shuffle(ALL_BOOKS).forEach(book => {
+    poolOrder.forEach(book => {
       if (!placed[book]) pool.appendChild(makeChip(book, false, false));
     });
     // Re-render placed books
@@ -546,13 +545,18 @@
   // ── TAP LOGIC ─────────────────────────────────────────────────────────────
   function onChipTap(book, inGroup) {
     if (selectedBook === book) {
-      // Deselect if tapping same chip
       deselectBook();
       return;
     }
-    // If tapping another chip while one is selected → change selection
+    // Remove selected class from previous chip without re-rendering
+    if (selectedBook) {
+      const prev = document.querySelector(`.book-chip[data-book="${CSS.escape(selectedBook)}"]`);
+      if (prev) prev.classList.remove('selected');
+    }
     selectedBook = book;
-    renderPool();
+    // Add selected class to new chip without re-rendering
+    const chip = document.querySelector(`.book-chip[data-book="${CSS.escape(book)}"]`);
+    if (chip) chip.classList.add('selected');
     updateInstruction(book);
   }
 
@@ -564,8 +568,11 @@
   }
 
   function deselectBook() {
+    if (selectedBook) {
+      const chip = document.querySelector(`.book-chip[data-book="${CSS.escape(selectedBook)}"]`);
+      if (chip) chip.classList.remove('selected');
+    }
     selectedBook = null;
-    renderPool();
     updateInstruction();
   }
 
