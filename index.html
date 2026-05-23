@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Libros de la Biblia — Clasificación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f8faff;
+      --blue: #1a6bbf;
+      --blue-light: #e8f1fb;
+      --blue-dark: #0d4a8a;
+      --text: #0d2a4a;
+      --text-soft: #4a6a8a;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,107,191,0.10);
+      --shadow-lg: 0 8px 40px rgba(26,107,191,0.18);
+
+      /* Group colors */
+      --ley:       #2e7d5e;
+      --ley-bg:    #eaf7f2;
+      --hist-at:   #7b3fa0;
+      --hist-at-bg:#f5edfb;
+      --poe:       #c27c00;
+      --poe-bg:    #fff8e6;
+      --prof-may:  #b03a2e;
+      --prof-may-bg:#fdecea;
+      --prof-men:  #1a6bbf;
+      --prof-men-bg:#e8f1fb;
+      --evan:      #1d7a4a;
+      --evan-bg:   #e9f7ef;
+      --hist-nt:   #5c3d8f;
+      --hist-nt-bg:#f0eafa;
+      --pablo:     #0d6e8a;
+      --pablo-bg:  #e4f4f8;
+      --epist:     #8a4a0d;
+      --epist-bg:  #fdf0e4;
+      --prof-nt:   #a0174a;
+      --prof-nt-bg:#fde8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      border-bottom: 2px solid var(--blue-light);
+      padding: 24px 32px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.3rem, 3vw, 2rem);
+      color: var(--blue-dark);
+      letter-spacing: -0.5px;
+    }
+    header h1 span { color: var(--blue); }
+
+    .header-right { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    #score-badge {
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-weight: 600;
+      font-size: 0.95rem;
+      padding: 6px 16px;
+      border-radius: 20px;
+    }
+
+    .btn {
+      padding: 8px 20px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover { background: var(--blue-dark); transform: translateY(-1px); }
+    .btn-outline { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+    .btn-outline:hover { background: var(--blue-light); }
+
+    /* ── PROGRESS ── */
+    #progress-bar-wrap {
+      height: 4px;
+      background: var(--blue-light);
+    }
+    #progress-bar {
+      height: 4px;
+      background: var(--blue);
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 80px);
+    }
+
+    /* ── BOOKS POOL ── */
+    #pool-panel {
+      background: var(--white);
+      border-right: 2px solid var(--blue-light);
+      padding: 24px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    #pool-panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.05rem;
+      color: var(--blue-dark);
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--blue-light);
+    }
+    #pool-panel p {
+      font-size: 0.82rem;
+      color: var(--text-soft);
+      line-height: 1.5;
+    }
+
+    #books-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-content: flex-start;
+      min-height: 200px;
+      border: 2px dashed var(--blue-light);
+      border-radius: 12px;
+      padding: 12px;
+      transition: background 0.2s;
+    }
+    #books-pool.drag-over {
+      background: var(--blue-light);
+      border-color: var(--blue);
+    }
+
+    /* ── BOOK CHIP ── */
+    .book-chip {
+      background: var(--white);
+      border: 2px solid var(--blue-light);
+      color: var(--text);
+      font-size: 0.78rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 20px;
+      cursor: grab;
+      user-select: none;
+      transition: all 0.18s;
+      box-shadow: 0 2px 6px rgba(26,107,191,0.07);
+      white-space: nowrap;
+    }
+    .book-chip:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); box-shadow: 0 4px 12px rgba(26,107,191,0.15); }
+    .book-chip.dragging { opacity: 0.4; transform: scale(0.95); }
+    .book-chip.correct { border-color: #2e7d5e; background: #eaf7f2; color: #2e7d5e; cursor: default; }
+    .book-chip.wrong-shake { animation: shake 0.4s ease; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    /* ── GROUPS AREA ── */
+    #groups-area {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+      gap: 20px;
+      align-content: start;
+    }
+
+    /* ── GROUP CARD ── */
+    .group-card {
+      border-radius: 14px;
+      border: 2px solid transparent;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s;
+    }
+    .group-card.drag-over {
+      box-shadow: var(--shadow-lg);
+      transform: scale(1.01);
+    }
+
+    .group-header {
+      padding: 10px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .group-header h3 {
+      font-family: 'Playfair Display', serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .group-header .tag {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 2px 8px;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.5);
+      opacity: 0.8;
+    }
+
+    .group-drop {
+      min-height: 80px;
+      padding: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-content: flex-start;
+    }
+
+    .group-count {
+      font-size: 0.72rem;
+      padding: 0 14px 8px;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+
+    /* Group themes */
+    .g-ley      { border-color: var(--ley);       background: var(--ley-bg); }
+    .g-ley      .group-header { background: var(--ley); color: #fff; }
+
+    .g-hist-at  { border-color: var(--hist-at);   background: var(--hist-at-bg); }
+    .g-hist-at  .group-header { background: var(--hist-at); color: #fff; }
+
+    .g-poe      { border-color: var(--poe);       background: var(--poe-bg); }
+    .g-poe      .group-header { background: var(--poe); color: #fff; }
+
+    .g-prof-may { border-color: var(--prof-may);  background: var(--prof-may-bg); }
+    .g-prof-may .group-header { background: var(--prof-may); color: #fff; }
+
+    .g-prof-men { border-color: var(--prof-men);  background: var(--prof-men-bg); }
+    .g-prof-men .group-header { background: var(--prof-men); color: #fff; }
+
+    .g-evan     { border-color: var(--evan);      background: var(--evan-bg); }
+    .g-evan     .group-header { background: var(--evan); color: #fff; }
+
+    .g-hist-nt  { border-color: var(--hist-nt);   background: var(--hist-nt-bg); }
+    .g-hist-nt  .group-header { background: var(--hist-nt); color: #fff; }
+
+    .g-pablo    { border-color: var(--pablo);     background: var(--pablo-bg); }
+    .g-pablo    .group-header { background: var(--pablo); color: #fff; }
+
+    .g-epist    { border-color: var(--epist);     background: var(--epist-bg); }
+    .g-epist    .group-header { background: var(--epist); color: #fff; }
+
+    .g-prof-nt  { border-color: var(--prof-nt);   background: var(--prof-nt-bg); }
+    .g-prof-nt  .group-header { background: var(--prof-nt); color: #fff; }
+
+    /* ── MODAL ── */
+    #modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(13,42,74,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-overlay.show { display: flex; }
+    #modal {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 420px;
+      width: 90%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      animation: pop 0.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    #modal .emoji { font-size: 3.5rem; margin-bottom: 16px; }
+    #modal h2 { font-family: 'Playfair Display', serif; font-size: 1.8rem; color: var(--blue-dark); margin-bottom: 8px; }
+    #modal p { color: var(--text-soft); margin-bottom: 24px; font-size: 1rem; line-height: 1.6; }
+    #modal .score-big { font-size: 2.5rem; font-weight: 700; color: var(--blue); margin: 10px 0 20px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: #fff;
+      padding: 10px 24px;
+      border-radius: 30px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      z-index: 300;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #2e7d5e; }
+    #toast.error   { background: #b03a2e; }
+
+    /* ── MOBILE ── */
+    @media (max-width: 700px) {
+      main { grid-template-columns: 1fr; }
+      #pool-panel { border-right: none; border-bottom: 2px solid var(--blue-light); }
+      #groups-area { padding: 16px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
+      header { padding: 16px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Libros de la <span>Biblia</span></h1>
+  <div class="header-right">
+    <div id="score-badge">✅ 0 / 66</div>
+    <button class="btn btn-outline" onclick="checkAll()">Verificar</button>
+    <button class="btn btn-primary" onclick="resetGame()">Reiniciar</button>
+  </div>
+</header>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<main>
+  <!-- LEFT: pool of books -->
+  <aside id="pool-panel">
+    <h2>📚 Libros disponibles</h2>
+    <p>Arrastra cada libro al grupo correcto del Antiguo o Nuevo Testamento.</p>
+    <div id="books-pool"
+         ondragover="poolDragOver(event)"
+         ondrop="dropToPool(event)"
+         ondragleave="poolDragLeave(event)">
+    </div>
+  </aside>
+
+  <!-- RIGHT: drop groups -->
+  <section id="groups-area"></section>
+</main>
+
+<!-- Modal final -->
+<div id="modal-overlay">
+  <div id="modal">
+    <div class="emoji" id="modal-emoji">🎉</div>
+    <h2 id="modal-title">¡Completado!</h2>
+    <p id="modal-msg"></p>
+    <div class="score-big" id="modal-score"></div>
+    <button class="btn btn-primary" onclick="resetGame(); closeModal()">Jugar de nuevo</button>
+  </div>
+</div>
+
+<!-- Toast -->
+<div id="toast"></div>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────────────────────────
+  const GROUPS = [
+    { id:'ley',      label:'Ley',               tag:'AT', cls:'g-ley',
+      books:['Génesis','Éxodo','Levítico','Números','Deuteronomio'] },
+    { id:'hist-at',  label:'Historia',           tag:'AT', cls:'g-hist-at',
+      books:['Josué','Jueces','Ruth','1° Samuel','2° Samuel','1° Reyes','2° Reyes','1° Crónicas','2° Crónicas','Esdras','Nehemías','Ester'] },
+    { id:'poe',      label:'Poesía',             tag:'AT', cls:'g-poe',
+      books:['Job','Salmos','Proverbios','Eclesiastés','Cantares'] },
+    { id:'prof-may', label:'Profetas Mayores',   tag:'AT', cls:'g-prof-may',
+      books:['Isaías','Jeremías','Lamentaciones','Ezequiel','Daniel'] },
+    { id:'prof-men', label:'Profetas Menores',   tag:'AT', cls:'g-prof-men',
+      books:['Oseas','Joel','Amós','Abdías','Jonás','Miqueas','Nahum','Habacuc','Sofonías','Hageo','Zacarías','Malaquías'] },
+    { id:'evan',     label:'Evangelios',         tag:'NT', cls:'g-evan',
+      books:['Mateo','Marcos','Lucas','Juan'] },
+    { id:'hist-nt',  label:'Iglesia',             tag:'NT', cls:'g-hist-nt',
+      books:['Hechos'] },
+    { id:'pablo',    label:'Cartas de Pablo',    tag:'NT', cls:'g-pablo',
+      books:['Romanos','1° Corintios','2° Corintios','Gálatas','Efesios','Filipenses','Colosenses','1° Tesalonicenses','2° Tesalonicenses','1° Timoteo','2° Timoteo','Tito','Filemón'] },
+    { id:'epist',    label:'Epístolas Generales',tag:'NT', cls:'g-epist',
+      books:['Hebreos','Santiago','1° Pedro','2° Pedro','1° Juan','2° Juan','3° Juan','Judas'] },
+    { id:'prof-nt',  label:'Profecía',           tag:'NT', cls:'g-prof-nt',
+      books:['Apocalipsis'] },
+  ];
+
+  const ALL_BOOKS = GROUPS.flatMap(g => g.books);
+  const BOOK_GROUP = {};
+  GROUPS.forEach(g => g.books.forEach(b => BOOK_GROUP[b] = g.id));
+
+  let placed = {}; // bookName -> groupId (currently placed)
+  let correct = new Set();
+  let draggedBook = null;
+
+  // ── INIT ─────────────────────────────────────────────────────────────────
+  function init() {
+    placed = {};
+    correct = new Set();
+    draggedBook = null;
+    renderGroups();
+    renderPool();
+    updateScore();
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length-1; i > 0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  // ── RENDER GROUPS ─────────────────────────────────────────────────────────
+  function renderGroups() {
+    const area = document.getElementById('groups-area');
+    area.innerHTML = '';
+    GROUPS.forEach(g => {
+      const card = document.createElement('div');
+      card.className = `group-card ${g.cls}`;
+      card.innerHTML = `
+        <div class="group-header">
+          <h3>${g.label}</h3>
+          <span class="tag">${g.tag}</span>
+        </div>
+        <div class="group-drop"
+             id="drop-${g.id}"
+             data-group="${g.id}"
+             ondragover="groupDragOver(event)"
+             ondrop="dropToGroup(event)"
+             ondragleave="groupDragLeave(event)">
+        </div>
+        <div class="group-count" id="count-${g.id}">0 / ${g.books.length}</div>
+      `;
+      area.appendChild(card);
+    });
+  }
+
+  // ── RENDER POOL ──────────────────────────────────────────────────────────
+  function renderPool() {
+    const pool = document.getElementById('books-pool');
+    pool.innerHTML = '';
+    // Books not yet placed anywhere
+    const shuffled = shuffle(ALL_BOOKS);
+    shuffled.forEach(book => {
+      if (!placed[book]) {
+        pool.appendChild(makeChip(book));
+      }
+    });
+    // Re-render placed books in their groups
+    GROUPS.forEach(g => {
+      const drop = document.getElementById(`drop-${g.id}`);
+      if (drop) drop.innerHTML = '';
+    });
+    Object.entries(placed).forEach(([book, gid]) => {
+      const drop = document.getElementById(`drop-${gid}`);
+      if (drop) drop.appendChild(makeChip(book, correct.has(book)));
+    });
+    updateCounts();
+  }
+
+  function makeChip(book, isCorrect = false) {
+    const chip = document.createElement('div');
+    chip.className = 'book-chip' + (isCorrect ? ' correct' : '');
+    chip.textContent = book;
+    chip.draggable = !isCorrect;
+    chip.dataset.book = book;
+    chip.addEventListener('dragstart', onDragStart);
+    chip.addEventListener('dragend', onDragEnd);
+    return chip;
+  }
+
+  // ── DRAG EVENTS ──────────────────────────────────────────────────────────
+  function onDragStart(e) {
+    draggedBook = e.target.dataset.book;
+    e.target.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  }
+  function onDragEnd(e) {
+    e.target.classList.remove('dragging');
+  }
+
+  function groupDragOver(e) {
+    e.preventDefault();
+    e.currentTarget.closest('.group-card').classList.add('drag-over');
+  }
+  function groupDragLeave(e) {
+    e.currentTarget.closest('.group-card').classList.remove('drag-over');
+  }
+  function dropToGroup(e) {
+    e.preventDefault();
+    const card = e.currentTarget.closest('.group-card');
+    card.classList.remove('drag-over');
+    const gid = e.currentTarget.dataset.group;
+    if (!draggedBook) return;
+
+    const expectedGid = BOOK_GROUP[draggedBook];
+    placed[draggedBook] = gid;
+
+    if (gid === expectedGid) {
+      correct.add(draggedBook);
+      showToast(`✅ ¡Correcto! "${draggedBook}"`, 'success');
+    } else {
+      correct.delete(draggedBook);
+      showToast(`❌ "${draggedBook}" no va ahí`, 'error');
+      // shake the card
+      setTimeout(() => {
+        const chip = document.querySelector(`[data-book="${draggedBook}"]`);
+        if (chip) { chip.classList.add('wrong-shake'); setTimeout(()=>chip.classList.remove('wrong-shake'),500); }
+      }, 50);
+    }
+
+    renderPool();
+    updateScore();
+    checkWin();
+    draggedBook = null;
+  }
+
+  function poolDragOver(e) {
+    e.preventDefault();
+    document.getElementById('books-pool').classList.add('drag-over');
+  }
+  function poolDragLeave(e) {
+    document.getElementById('books-pool').classList.remove('drag-over');
+  }
+  function dropToPool(e) {
+    e.preventDefault();
+    document.getElementById('books-pool').classList.remove('drag-over');
+    if (!draggedBook || correct.has(draggedBook)) return;
+    delete placed[draggedBook];
+    correct.delete(draggedBook);
+    renderPool();
+    updateScore();
+    draggedBook = null;
+  }
+
+  // ── SCORE & PROGRESS ─────────────────────────────────────────────────────
+  function updateScore() {
+    document.getElementById('score-badge').textContent = `✅ ${correct.size} / 66`;
+    document.getElementById('progress-bar').style.width = `${(correct.size/66)*100}%`;
+  }
+
+  function updateCounts() {
+    GROUPS.forEach(g => {
+      const inGroup = Object.entries(placed).filter(([b,gid])=>gid===g.id).length;
+      const el = document.getElementById(`count-${g.id}`);
+      if (el) el.textContent = `${inGroup} / ${g.books.length}`;
+    });
+  }
+
+  // ── WIN CHECK ────────────────────────────────────────────────────────────
+  function checkWin() {
+    if (correct.size === 66) {
+      setTimeout(() => showModal(true), 400);
+    }
+  }
+
+  function checkAll() {
+    const pct = Math.round((correct.size/66)*100);
+    showModal(false, pct);
+  }
+
+  function showModal(isWin, pct) {
+    const overlay = document.getElementById('modal-overlay');
+    document.getElementById('modal-emoji').textContent = isWin ? '🏆' : pct >= 70 ? '🎯' : '📖';
+    document.getElementById('modal-title').textContent = isWin ? '¡Completado!' : 'Progreso actual';
+    document.getElementById('modal-score').textContent = `${correct.size} / 66`;
+    document.getElementById('modal-msg').textContent = isWin
+      ? '¡Clasificaste todos los libros correctamente! Conoces muy bien tu Biblia.'
+      : `Tienes ${correct.size} libros en su lugar correcto. ¡Sigue intentando!`;
+    overlay.classList.add('show');
+  }
+
+  function closeModal() {
+    document.getElementById('modal-overlay').classList.remove('show');
+  }
+  document.getElementById('modal-overlay').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeModal();
+  });
+
+  // ── TOAST ────────────────────────────────────────────────────────────────
+  let toastTimer;
+  function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.className = 'show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.className = '', 2000);
+  }
+
+  // ── RESET ────────────────────────────────────────────────────────────────
+  function resetGame() { init(); }
+
+  // ── START ─────────────────────────────────────────────────────────────────
+  init();
+</script>
+</body>
+</html>
