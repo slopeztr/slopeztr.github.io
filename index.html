@@ -175,6 +175,27 @@
     .book-chip.dragging { opacity: 0.4; transform: scale(0.95); }
     .book-chip.correct { border-color: #2e7d5e; background: #eaf7f2; color: #2e7d5e; cursor: default; }
     .book-chip.wrong-shake { animation: shake 0.4s ease; }
+    .book-chip { position: relative; }
+    .book-chip:not(.correct) { padding-right: 22px; }
+    .book-chip .remove-btn {
+      display: none;
+      position: absolute;
+      right: 4px; top: 50%;
+      transform: translateY(-50%);
+      width: 14px; height: 14px;
+      background: #b03a2e;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 9px;
+      line-height: 14px;
+      text-align: center;
+      cursor: pointer;
+      font-weight: 700;
+      transition: background 0.15s;
+      z-index: 2;
+    }
+    .book-chip:not(.correct):hover .remove-btn { display: block; }
+    .book-chip .remove-btn:hover { background: #8b1a10; }
 
     @keyframes shake {
       0%,100% { transform: translateX(0); }
@@ -464,17 +485,37 @@
     });
     Object.entries(placed).forEach(([book, gid]) => {
       const drop = document.getElementById(`drop-${gid}`);
-      if (drop) drop.appendChild(makeChip(book, correct.has(book)));
+      if (drop) drop.appendChild(makeChip(book, correct.has(book), true));
     });
     updateCounts();
   }
 
-  function makeChip(book, isCorrect = false) {
+  function makeChip(book, isCorrect = false, inGroup = false) {
     const chip = document.createElement('div');
     chip.className = 'book-chip' + (isCorrect ? ' correct' : '');
-    chip.textContent = book;
-    chip.draggable = !isCorrect;
     chip.dataset.book = book;
+
+    const label = document.createElement('span');
+    label.textContent = book;
+    chip.appendChild(label);
+
+    // Show x button only for wrong placements inside a group
+    if (inGroup && !isCorrect) {
+      const btn = document.createElement('span');
+      btn.className = 'remove-btn';
+      btn.textContent = '\u2715';
+      btn.title = 'Quitar libro';
+      btn.addEventListener('click', e => {
+        e.stopPropagation();
+        delete placed[book];
+        correct.delete(book);
+        renderPool();
+        updateScore();
+      });
+      chip.appendChild(btn);
+    }
+
+    chip.draggable = !isCorrect;
     chip.addEventListener('dragstart', onDragStart);
     chip.addEventListener('dragend', onDragEnd);
     return chip;
