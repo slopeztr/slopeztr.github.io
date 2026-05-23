@@ -70,6 +70,15 @@
       padding: 5px 14px;
       border-radius: 20px;
     }
+    #rank-badge {
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 5px 14px;
+      border-radius: 20px;
+      transition: background 0.5s, color 0.5s, transform 0.3s;
+      background: #e8e8e8;
+      color: #555;
+    }
     .btn {
       padding: 7px 16px;
       border-radius: 8px;
@@ -365,6 +374,7 @@
   <h1>Libros de la <span>Biblia</span></h1>
   <div class="header-right">
     <div id="score-badge">✅ 0 / 66</div>
+    <div id="rank-badge">🗡️ Filisteo</div>
     <button class="btn btn-outline" onclick="checkAll()">Verificar</button>
     <button class="btn btn-primary" onclick="resetGame()">Reiniciar</button>
   </div>
@@ -618,9 +628,34 @@
     }
   }
 
+  const RANKS = [
+    { min:  0, max: 10, label: '🗡️ Filisteo',       bg: '#e8e8e8', color: '#555555' },
+    { min: 11, max: 25, label: '🏛️ Fariseo',         bg: '#f5edfb', color: '#7b3fa0' },
+    { min: 26, max: 40, label: '🌍 Gentil',           bg: '#fff8e6', color: '#c27c00' },
+    { min: 41, max: 55, label: '🤝 Simpatizante',     bg: '#e4f4f8', color: '#0d6e8a' },
+    { min: 56, max: 65, label: '✝️ Discípulo',        bg: '#e9f7ef', color: '#1d7a4a' },
+    { min: 66, max: 66, label: '👑 Siervo de Cristo', bg: '#fff3cd', color: '#856404' },
+  ];
+
+  function getRank(n) {
+    return RANKS.find(r => n >= r.min && n <= r.max) || RANKS[0];
+  }
+
   function updateScore() {
-    document.getElementById('score-badge').textContent = `✅ ${correct.size} / 66`;
-    document.getElementById('progress-bar').style.width = `${(correct.size/66)*100}%`;
+    const n = correct.size;
+    document.getElementById('score-badge').textContent = `✅ ${n} / 66`;
+    document.getElementById('progress-bar').style.width = `${(n/66)*100}%`;
+    const rank = getRank(n);
+    const badge = document.getElementById('rank-badge');
+    const prev = badge.textContent;
+    badge.textContent = rank.label;
+    badge.style.background = rank.bg;
+    badge.style.color = rank.color;
+    // Pulse animation on rank change
+    if (prev !== rank.label) {
+      badge.style.transform = 'scale(1.18)';
+      setTimeout(() => badge.style.transform = 'scale(1)', 300);
+    }
   }
 
   function updateCounts() {
