@@ -1,705 +1,870 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Libros de la Biblia — Clasificación</title>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
-  <style>
-    :root {
-      --bg: #f8faff;
-      --blue: #1a6bbf;
-      --blue-light: #e8f1fb;
-      --blue-dark: #0d4a8a;
-      --text: #0d2a4a;
-      --text-soft: #4a6a8a;
-      --white: #ffffff;
-      --shadow: 0 4px 20px rgba(26,107,191,0.10);
-      --shadow-lg: 0 8px 40px rgba(26,107,191,0.18);
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no"/>
+<title>Falsedad — El Juicio de la Verdad</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Crimson+Pro:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#0d0a07;
+  --surface:#1a1410;
+  --surface2:#241c14;
+  --gold:#c9a84c;
+  --gold2:#e8c96a;
+  --red:#8b2020;
+  --red2:#c0392b;
+  --cream:#f0e6d0;
+  --cream2:#d4c4a0;
+  --text:#e8dcc8;
+  --text-soft:#a09070;
+  --white:#fff8ef;
+  --shadow:0 8px 40px rgba(0,0,0,0.6);
+  --radius:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;}
+body{font-family:'Crimson Pro',serif;background:var(--bg);color:var(--text);display:flex;flex-direction:column;height:100dvh;}
 
-      --ley:        #2e7d5e; --ley-bg:       #eaf7f2;
-      --hist-at:    #7b3fa0; --hist-at-bg:   #f5edfb;
-      --poe:        #c27c00; --poe-bg:       #fff8e6;
-      --prof-may:   #b03a2e; --prof-may-bg:  #fdecea;
-      --prof-men:   #1a6bbf; --prof-men-bg:  #e8f1fb;
-      --evan:       #1d7a4a; --evan-bg:      #e9f7ef;
-      --hist-nt:    #5c3d8f; --hist-nt-bg:   #f0eafa;
-      --pablo:      #0d6e8a; --pablo-bg:     #e4f4f8;
-      --epist:      #8a4a0d; --epist-bg:     #fdf0e4;
-      --prof-nt:    #a0174a; --prof-nt-bg:   #fde8f0;
-    }
+/* SCROLLING PANEL */
+#app{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;}
 
-    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* ── HEADER ── */
+#top-bar{
+  position:sticky;top:0;z-index:50;
+  background:linear-gradient(180deg,#0d0a07 80%,transparent);
+  padding:14px 18px 10px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+}
+#rank-display{
+  display:flex;align-items:center;gap:8px;
+  background:var(--surface);
+  border:1px solid var(--gold);
+  border-radius:30px;padding:5px 14px;
+}
+#rank-icon{font-size:1.3rem;}
+#rank-name{font-family:'Cinzel',serif;font-size:0.7rem;color:var(--gold);letter-spacing:1px;}
+#progress-wrap{flex:1;display:flex;flex-direction:column;gap:3px;}
+#progress-label{font-size:0.68rem;color:var(--text-soft);text-align:right;}
+#progress-track{height:6px;background:var(--surface2);border-radius:4px;overflow:hidden;}
+#progress-fill{height:6px;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:4px;width:0%;transition:width 0.6s ease;}
+#score-chip{
+  background:var(--surface);border:1px solid var(--gold);
+  border-radius:20px;padding:5px 12px;
+  font-family:'Cinzel',serif;font-size:0.75rem;color:var(--gold2);
+  white-space:nowrap;
+}
 
-    body {
-      font-family: 'DM Sans', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
+/* ── HOME SCREEN ── */
+#home{display:block;padding:24px 20px 40px;text-align:center;animation:fadeIn 0.6s ease;}
+.scroll-ornament{font-size:3.5rem;margin-bottom:8px;filter:drop-shadow(0 0 20px rgba(201,168,76,0.5));}
+#home h1{font-family:'Cinzel',serif;font-size:clamp(1.6rem,6vw,2.4rem);color:var(--gold);line-height:1.2;margin-bottom:6px;}
+#home .subtitle{font-size:1rem;color:var(--cream2);font-style:italic;margin-bottom:4px;}
+#home .verse{font-size:0.82rem;color:var(--text-soft);margin-bottom:28px;}
+.modules-grid{display:flex;flex-direction:column;gap:10px;max-width:480px;margin:0 auto;}
+.module-btn{
+  background:var(--surface);
+  border:1px solid #3a2e1e;
+  border-radius:var(--radius);
+  padding:14px 18px;
+  display:flex;align-items:center;gap:14px;
+  cursor:pointer;transition:all 0.2s;text-align:left;
+  position:relative;overflow:hidden;
+}
+.module-btn::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(201,168,76,0.05),transparent);pointer-events:none;}
+.module-btn:active{transform:scale(0.97);}
+.module-btn.unlocked{border-color:rgba(201,168,76,0.3);}
+.module-btn.completed{border-color:var(--gold);background:linear-gradient(135deg,#1e1a0f,var(--surface));}
+.module-btn.locked{opacity:0.45;cursor:not-allowed;}
+.mod-icon{font-size:1.8rem;flex-shrink:0;}
+.mod-info{flex:1;}
+.mod-num{font-size:0.65rem;color:var(--text-soft);letter-spacing:2px;text-transform:uppercase;font-family:'Cinzel',serif;}
+.mod-title{font-family:'Cinzel',serif;font-size:0.88rem;color:var(--cream);margin-top:2px;}
+.mod-desc{font-size:0.75rem;color:var(--text-soft);margin-top:2px;font-style:italic;}
+.mod-status{font-size:1.2rem;flex-shrink:0;}
+.difficulty-dots{display:flex;gap:3px;margin-top:4px;}
+.difficulty-dots span{width:6px;height:6px;border-radius:50%;background:var(--surface2);}
+.difficulty-dots span.lit{background:var(--gold);}
 
-    /* ── HEADER ── */
-    header {
-      background: var(--white);
-      border-bottom: 2px solid var(--blue-light);
-      padding: 14px 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow);
-    }
-    header h1 {
-      font-family: 'Playfair Display', serif;
-      font-size: clamp(1.1rem, 3vw, 1.7rem);
-      color: var(--blue-dark);
-    }
-    header h1 span { color: var(--blue); }
-    .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+/* ── QUIZ SCREEN ── */
+#quiz-screen{display:block;padding:16px 18px 40px;max-width:520px;margin:0 auto;}
+.quiz-header{margin-bottom:20px;}
+.quiz-module-title{font-family:'Cinzel',serif;font-size:0.75rem;color:var(--gold);letter-spacing:2px;text-transform:uppercase;}
+.quiz-question-num{font-size:0.7rem;color:var(--text-soft);margin-top:2px;}
+.q-progress{display:flex;gap:4px;margin-top:10px;}
+.q-pip{flex:1;height:4px;border-radius:2px;background:var(--surface2);transition:background 0.3s;}
+.q-pip.done{background:var(--gold);}
+.q-pip.current{background:var(--gold2);}
 
-    #score-badge {
-      background: var(--blue-light);
-      color: var(--blue-dark);
-      font-weight: 600;
-      font-size: 0.88rem;
-      padding: 5px 14px;
-      border-radius: 20px;
-    }
-    #rank-badge {
-      font-weight: 700;
-      font-size: 0.88rem;
-      padding: 5px 14px;
-      border-radius: 20px;
-      transition: background 0.5s, color 0.5s, transform 0.3s;
-      background: #e8e8e8;
-      color: #555;
-    }
-    .btn {
-      padding: 7px 16px;
-      border-radius: 8px;
-      border: none;
-      font-family: 'DM Sans', sans-serif;
-      font-size: 0.85rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.2s;
-      touch-action: manipulation;
-    }
-    .btn-primary { background: var(--blue); color: #fff; }
-    .btn-primary:hover, .btn-primary:active { background: var(--blue-dark); }
-    .btn-outline { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
-    .btn-outline:hover, .btn-outline:active { background: var(--blue-light); }
+.question-card{
+  background:var(--surface);
+  border:1px solid #3a2e1e;
+  border-radius:var(--radius);
+  padding:22px 18px;
+  margin-bottom:16px;
+  animation:slideUp 0.35s ease;
+}
+@keyframes slideUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.q-type-badge{
+  display:inline-block;
+  font-size:0.62rem;letter-spacing:1.5px;text-transform:uppercase;font-family:'Cinzel',serif;
+  color:var(--gold);border:1px solid rgba(201,168,76,0.4);
+  border-radius:20px;padding:2px 10px;margin-bottom:12px;
+}
+.q-text{font-size:1.05rem;color:var(--cream);line-height:1.55;margin-bottom:18px;}
+.q-verse{font-size:0.8rem;color:var(--text-soft);font-style:italic;margin-bottom:14px;}
 
-    /* ── PROGRESS ── */
-    #progress-bar-wrap { height: 4px; background: var(--blue-light); }
-    #progress-bar { height: 4px; background: var(--blue); width: 0%; transition: width 0.5s ease; }
+/* Multiple choice */
+.choices{display:flex;flex-direction:column;gap:8px;}
+.choice-btn{
+  background:var(--surface2);border:1.5px solid #3a2e1e;
+  border-radius:10px;padding:12px 16px;
+  font-family:'Crimson Pro',serif;font-size:0.95rem;color:var(--text);
+  cursor:pointer;text-align:left;transition:all 0.18s;
+  touch-action:manipulation;
+}
+.choice-btn:active{transform:scale(0.97);}
+.choice-btn.selected{border-color:var(--gold);background:#2a2010;color:var(--gold2);}
+.choice-btn.correct{border-color:#2e7d5e;background:#0d2a1e;color:#6fcf97;}
+.choice-btn.wrong{border-color:var(--red2);background:#2a0d0d;color:#eb5757;}
 
-    /* ── INSTRUCTION BANNER ── */
-    #instruction {
-      background: var(--blue-light);
-      color: var(--blue-dark);
-      text-align: center;
-      font-size: 0.82rem;
-      font-weight: 500;
-      padding: 7px 16px;
-      transition: background 0.3s, color 0.3s;
-    }
-    #instruction.selected {
-      background: var(--blue);
-      color: #fff;
-    }
+/* Fill blank */
+.fill-wrap{position:relative;}
+.fill-input{
+  width:100%;background:var(--surface2);
+  border:1.5px solid #3a2e1e;border-radius:10px;
+  padding:12px 16px;font-family:'Crimson Pro',serif;font-size:1rem;
+  color:var(--cream);outline:none;
+  transition:border-color 0.2s;
+}
+.fill-input:focus{border-color:var(--gold);}
+.fill-input.correct{border-color:#2e7d5e;background:#0d2a1e;color:#6fcf97;}
+.fill-input.wrong{border-color:var(--red2);background:#2a0d0d;color:#eb5757;}
 
-    /* ── MAIN LAYOUT ── */
-    main {
-      display: grid;
-      grid-template-columns: 260px 1fr;
-      gap: 0;
-      min-height: calc(100vh - 90px);
-    }
+/* True/False */
+.tf-wrap{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.tf-btn{
+  background:var(--surface2);border:1.5px solid #3a2e1e;
+  border-radius:10px;padding:14px;
+  font-family:'Cinzel',serif;font-size:0.85rem;
+  cursor:pointer;text-align:center;transition:all 0.18s;
+  touch-action:manipulation;
+}
+.tf-btn:active{transform:scale(0.96);}
+.tf-btn.selected{border-color:var(--gold);background:#2a2010;color:var(--gold2);}
+.tf-btn.correct{border-color:#2e7d5e;background:#0d2a1e;color:#6fcf97;}
+.tf-btn.wrong{border-color:var(--red2);background:#2a0d0d;color:#eb5757;}
 
-    /* ── BOOKS POOL ── */
-    #pool-panel {
-      background: var(--white);
-      border-right: 2px solid var(--blue-light);
-      padding: 18px 12px;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    #pool-panel h2 {
-      font-family: 'Playfair Display', serif;
-      font-size: 1rem;
-      color: var(--blue-dark);
-      padding-bottom: 8px;
-      border-bottom: 2px solid var(--blue-light);
-    }
-    #pool-panel p { font-size: 0.78rem; color: var(--text-soft); line-height: 1.5; }
+/* Memory match */
+.memory-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.mem-card{
+  background:var(--surface2);border:1.5px solid #3a2e1e;
+  border-radius:10px;padding:12px 10px;
+  font-family:'Crimson Pro',serif;font-size:0.85rem;color:var(--cream);
+  cursor:pointer;text-align:center;line-height:1.3;
+  transition:all 0.2s;min-height:60px;display:flex;align-items:center;justify-content:center;
+  touch-action:manipulation;
+}
+.mem-card:active{transform:scale(0.96);}
+.mem-card.selected{border-color:var(--gold);background:#2a2010;color:var(--gold2);}
+.mem-card.matched{border-color:#2e7d5e;background:#0d2a1e;color:#6fcf97;cursor:default;}
+.mem-card.wrong-flash{border-color:var(--red2);background:#2a0d0d;animation:flash 0.5s ease;}
+@keyframes flash{0%,100%{opacity:1;}50%{opacity:0.4;}}
+.memory-instructions{font-size:0.78rem;color:var(--text-soft);font-style:italic;margin-bottom:10px;}
 
-    #books-pool {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      align-content: flex-start;
-      min-height: 120px;
-      border: 2px dashed var(--blue-light);
-      border-radius: 12px;
-      padding: 10px;
-      transition: background 0.2s, border-color 0.2s;
-    }
-    #books-pool.drop-target {
-      background: var(--blue-light);
-      border-color: var(--blue);
-    }
+/* Order */
+.order-list{display:flex;flex-direction:column;gap:6px;}
+.order-item{
+  background:var(--surface2);border:1.5px solid #3a2e1e;
+  border-radius:10px;padding:11px 14px;
+  font-family:'Crimson Pro',serif;font-size:0.9rem;color:var(--cream);
+  cursor:pointer;display:flex;align-items:center;gap:10px;
+  transition:all 0.18s;touch-action:manipulation;
+}
+.order-item:active{transform:scale(0.97);}
+.order-item.selected-order{border-color:var(--gold);background:#2a2010;}
+.order-item.correct{border-color:#2e7d5e;background:#0d2a1e;color:#6fcf97;}
+.order-item.wrong{border-color:var(--red2);background:#2a0d0d;color:#eb5757;}
+.order-num{font-family:'Cinzel',serif;font-size:0.75rem;color:var(--gold);width:18px;text-align:center;flex-shrink:0;}
 
-    /* ── BOOK CHIP ── */
-    .book-chip {
-      position: relative;
-      background: var(--white);
-      border: 2px solid var(--blue-light);
-      color: var(--text);
-      font-size: 0.75rem;
-      font-weight: 500;
-      padding: 5px 10px;
-      border-radius: 20px;
-      cursor: pointer;
-      user-select: none;
-      touch-action: manipulation;
-      transition: all 0.18s;
-      box-shadow: 0 2px 6px rgba(26,107,191,0.07);
-      white-space: nowrap;
-    }
-    .book-chip:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); }
-    .book-chip:active { transform: scale(0.95); }
+/* Feedback */
+.feedback-box{
+  border-radius:10px;padding:14px 16px;margin-top:14px;
+  font-size:0.88rem;line-height:1.5;display:none;
+  animation:slideUp 0.3s ease;
+}
+.feedback-box.correct{background:#0d2a1e;border:1px solid #2e7d5e;color:#6fcf97;}
+.feedback-box.wrong{background:#2a0d0d;border:1px solid var(--red2);color:#eb8a8a;}
+.feedback-icon{font-size:1.2rem;margin-bottom:4px;}
 
-    /* Selected state (tap to pick) */
-    .book-chip.selected {
-      border-color: var(--blue);
-      background: var(--blue);
-      color: #fff;
-      transform: translateY(-3px);
-      box-shadow: 0 6px 18px rgba(26,107,191,0.35);
-      z-index: 10;
-    }
-    /* Drag ghost */
-    .book-chip.dragging { opacity: 0.35; transform: scale(0.92); }
+/* Nav buttons */
+.quiz-nav{display:flex;gap:10px;margin-top:6px;}
+.nav-btn{
+  flex:1;padding:14px;border-radius:10px;border:none;
+  font-family:'Cinzel',serif;font-size:0.82rem;letter-spacing:1px;
+  cursor:pointer;transition:all 0.2s;touch-action:manipulation;
+}
+.nav-btn-primary{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d0a07;font-weight:700;}
+.nav-btn-primary:active{transform:scale(0.97);}
+.nav-btn-secondary{background:var(--surface2);color:var(--text-soft);border:1px solid #3a2e1e;}
 
-    /* Correct */
-    .book-chip.correct {
-      border-color: #2e7d5e;
-      background: #eaf7f2;
-      color: #2e7d5e;
-      cursor: default;
-      padding-right: 10px;
-    }
-    .book-chip.wrong-shake { animation: shake 0.4s ease; }
+/* ── MODULE COMPLETE ── */
+#module-complete{display:block;padding:30px 24px;text-align:center;animation:fadeIn 0.5s ease;max-width:480px;margin:0 auto;}
+.complete-icon{font-size:4rem;margin-bottom:12px;}
+.complete-title{font-family:'Cinzel',serif;font-size:1.5rem;color:var(--gold);margin-bottom:8px;}
+.complete-score{font-size:3rem;font-weight:700;color:var(--gold2);margin:10px 0;}
+.complete-msg{font-size:0.95rem;color:var(--cream2);font-style:italic;margin-bottom:24px;line-height:1.6;}
+.stars-row{display:flex;justify-content:center;gap:8px;font-size:2rem;margin-bottom:20px;}
 
-    @keyframes shake {
-      0%,100% { transform: translateX(0); }
-      20% { transform: translateX(-6px); }
-      40% { transform: translateX(6px); }
-      60% { transform: translateX(-4px); }
-      80% { transform: translateX(4px); }
-    }
+/* ── RANK UNLOCK ── */
+#rank-unlock{
+  display:none;position:fixed;inset:0;z-index:200;
+  background:rgba(0,0,0,0.85);
+  align-items:center;justify-content:center;
+  animation:fadeIn 0.3s ease;
+}
+#rank-unlock.show{display:flex;}
+.rank-unlock-card{
+  background:linear-gradient(135deg,#1e1a0f,var(--surface));
+  border:2px solid var(--gold);border-radius:20px;
+  padding:36px 28px;text-align:center;max-width:320px;width:90%;
+  animation:pop 0.4s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 0 60px rgba(201,168,76,0.3);
+}
+@keyframes pop{from{transform:scale(0.7);opacity:0;}to{transform:scale(1);opacity:1;}}
+.rank-unlock-icon{font-size:4.5rem;margin-bottom:12px;}
+.rank-unlock-title{font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:3px;color:var(--text-soft);margin-bottom:6px;}
+.rank-unlock-name{font-family:'Cinzel',serif;font-size:1.8rem;color:var(--gold);margin-bottom:10px;}
+.rank-unlock-desc{font-size:0.88rem;color:var(--cream2);font-style:italic;line-height:1.5;margin-bottom:20px;}
 
-    /* Remove btn */
-    .remove-btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      margin-left: 5px;
-      width: 15px; height: 15px;
-      background: #b03a2e;
-      color: #fff;
-      border-radius: 50%;
-      font-size: 9px;
-      font-weight: 700;
-      cursor: pointer;
-      vertical-align: middle;
-      flex-shrink: 0;
-      transition: background 0.15s;
-      touch-action: manipulation;
-    }
-    .remove-btn:hover, .remove-btn:active { background: #8b1a10; }
+/* ── TOAST ── */
+#toast{
+  position:fixed;bottom:24px;left:50%;
+  transform:translateX(-50%) translateY(80px);
+  background:var(--surface);border:1px solid var(--gold);
+  color:var(--gold2);padding:9px 22px;border-radius:30px;
+  font-family:'Cinzel',serif;font-size:0.75rem;letter-spacing:1px;
+  z-index:300;transition:transform 0.3s ease;pointer-events:none;white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0);}
 
-    /* ── GROUPS AREA ── */
-    #groups-area {
-      padding: 18px;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-      gap: 16px;
-      align-content: start;
-    }
+/* ── UTILS ── */
+.gold-btn{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d0a07;
+  border:none;border-radius:10px;padding:14px 28px;
+  font-family:'Cinzel',serif;font-size:0.85rem;font-weight:700;letter-spacing:1px;
+  cursor:pointer;transition:all 0.2s;touch-action:manipulation;width:100%;
+}
+.gold-btn:active{transform:scale(0.97);}
+.ghost-btn{
+  background:transparent;color:var(--text-soft);
+  border:1px solid #3a2e1e;border-radius:10px;padding:12px 28px;
+  font-family:'Cinzel',serif;font-size:0.82rem;
+  cursor:pointer;transition:all 0.2s;touch-action:manipulation;width:100%;margin-top:8px;
+}
 
-    /* ── GROUP CARD ── */
-    .group-card {
-      border-radius: 14px;
-      border: 2px solid transparent;
-      overflow: hidden;
-      box-shadow: var(--shadow);
-      transition: box-shadow 0.2s, transform 0.2s;
-      cursor: pointer;
-    }
-    .group-card.drop-target {
-      box-shadow: var(--shadow-lg);
-      transform: scale(1.02);
-      border-width: 3px;
-    }
-
-    .group-header {
-      padding: 9px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-    .group-header h3 { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 700; }
-    .group-header .tag {
-      font-size: 0.68rem; font-weight: 600;
-      padding: 2px 8px; border-radius: 10px;
-      background: rgba(255,255,255,0.45);
-    }
-    .group-drop {
-      min-height: 70px;
-      padding: 8px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-      align-content: flex-start;
-    }
-    .group-count {
-      font-size: 0.7rem;
-      padding: 0 12px 7px;
-      opacity: 0.7;
-      font-weight: 500;
-    }
-
-    /* Group themes */
-    .g-ley      { border-color: var(--ley);      background: var(--ley-bg); }
-    .g-ley      .group-header { background: var(--ley); color: #fff; }
-    .g-hist-at  { border-color: var(--hist-at);  background: var(--hist-at-bg); }
-    .g-hist-at  .group-header { background: var(--hist-at); color: #fff; }
-    .g-poe      { border-color: var(--poe);      background: var(--poe-bg); }
-    .g-poe      .group-header { background: var(--poe); color: #fff; }
-    .g-prof-may { border-color: var(--prof-may); background: var(--prof-may-bg); }
-    .g-prof-may .group-header { background: var(--prof-may); color: #fff; }
-    .g-prof-men { border-color: var(--prof-men); background: var(--prof-men-bg); }
-    .g-prof-men .group-header { background: var(--prof-men); color: #fff; }
-    .g-evan     { border-color: var(--evan);     background: var(--evan-bg); }
-    .g-evan     .group-header { background: var(--evan); color: #fff; }
-    .g-hist-nt  { border-color: var(--hist-nt);  background: var(--hist-nt-bg); }
-    .g-hist-nt  .group-header { background: var(--hist-nt); color: #fff; }
-    .g-pablo    { border-color: var(--pablo);    background: var(--pablo-bg); }
-    .g-pablo    .group-header { background: var(--pablo); color: #fff; }
-    .g-epist    { border-color: var(--epist);    background: var(--epist-bg); }
-    .g-epist    .group-header { background: var(--epist); color: #fff; }
-    .g-prof-nt  { border-color: var(--prof-nt);  background: var(--prof-nt-bg); }
-    .g-prof-nt  .group-header { background: var(--prof-nt); color: #fff; }
-
-    /* ── MODAL ── */
-    #modal-overlay {
-      display: none;
-      position: fixed; inset: 0;
-      background: rgba(13,42,74,0.55);
-      z-index: 200;
-      align-items: center;
-      justify-content: center;
-    }
-    #modal-overlay.show { display: flex; }
-    #modal {
-      background: var(--white);
-      border-radius: 20px;
-      padding: 36px 32px;
-      max-width: 400px;
-      width: 90%;
-      text-align: center;
-      box-shadow: var(--shadow-lg);
-      animation: pop 0.3s cubic-bezier(.34,1.56,.64,1);
-    }
-    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
-    #modal .emoji { font-size: 3rem; margin-bottom: 12px; }
-    #modal h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--blue-dark); margin-bottom: 8px; }
-    #modal p { color: var(--text-soft); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; }
-    #modal .score-big { font-size: 2.2rem; font-weight: 700; color: var(--blue); margin: 8px 0 18px; }
-
-    /* ── TOAST ── */
-    #toast {
-      position: fixed;
-      bottom: 24px; left: 50%;
-      transform: translateX(-50%) translateY(80px);
-      background: var(--text);
-      color: #fff;
-      padding: 9px 22px;
-      border-radius: 30px;
-      font-size: 0.88rem;
-      font-weight: 500;
-      z-index: 300;
-      transition: transform 0.3s ease;
-      pointer-events: none;
-      white-space: nowrap;
-    }
-    #toast.show { transform: translateX(-50%) translateY(0); }
-    #toast.success { background: #2e7d5e; }
-    #toast.error   { background: #b03a2e; }
-
-    /* ── MOBILE LAYOUT ── */
-    @media (max-width: 680px) {
-      main {
-        grid-template-columns: 1fr;
-        grid-template-rows: auto 1fr;
-      }
-      #pool-panel {
-        border-right: none;
-        border-bottom: 2px solid var(--blue-light);
-        padding: 12px;
-      }
-      #pool-panel p { display: none; }
-      #books-pool { min-height: 80px; }
-      #groups-area {
-        padding: 12px;
-        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-        gap: 10px;
-      }
-      .group-drop { min-height: 50px; }
-      .book-chip { font-size: 0.72rem; padding: 5px 9px; }
-    }
-  </style>
+.separator{height:1px;background:linear-gradient(90deg,transparent,var(--gold),transparent);margin:20px 0;opacity:0.3;}
+</style>
 </head>
 <body>
-
-<header>
-  <h1>Libros de la <span>Biblia</span></h1>
-  <div class="header-right">
-    <div id="score-badge">✅ 0 / 66</div>
-    <div id="rank-badge">🗡️ Filisteo</div>
-    <button class="btn btn-outline" onclick="checkAll()">Verificar</button>
-    <button class="btn btn-primary" onclick="resetGame()">Reiniciar</button>
+<div id="app">
+  <!-- TOP BAR -->
+  <div id="top-bar">
+    <div id="rank-display">
+      <span id="rank-icon">⚔️</span>
+      <span id="rank-name">FILISTEO</span>
+    </div>
+    <div id="progress-wrap">
+      <div id="progress-label">0 / 50 preguntas</div>
+      <div id="progress-track"><div id="progress-fill"></div></div>
+    </div>
+    <div id="score-chip">⭐ 0</div>
   </div>
-</header>
-<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
-<div id="instruction">👆 Toca un libro y luego toca el grupo donde pertenece</div>
 
-<main>
-  <aside id="pool-panel">
-    <h2>📚 Libros disponibles</h2>
-    <p>Toca un libro para seleccionarlo, luego toca el grupo donde pertenece.</p>
-    <div id="books-pool"></div>
-  </aside>
-  <section id="groups-area"></section>
-</main>
+  <!-- HOME -->
+  <div id="home">
+    <div class="scroll-ornament">📜</div>
+    <h1>FALSEDAD</h1>
+    <div class="subtitle">El Juicio de la Verdad</div>
+    <div class="verse">Marcos 11:15–19 · Marcos 12:28–34</div>
+    <div class="separator"></div>
+    <div class="modules-grid" id="modules-grid"></div>
+  </div>
 
-<div id="modal-overlay">
-  <div id="modal">
-    <div class="emoji" id="modal-emoji">🎉</div>
-    <h2 id="modal-title">¡Completado!</h2>
-    <p id="modal-msg"></p>
-    <div class="score-big" id="modal-score"></div>
-    <button class="btn btn-primary" onclick="resetGame(); closeModal()">Jugar de nuevo</button>
+  <!-- QUIZ -->
+  <div id="quiz-screen">
+    <div class="quiz-header">
+      <div class="quiz-module-title" id="qm-title"></div>
+      <div class="quiz-question-num" id="qm-num"></div>
+      <div class="q-progress" id="q-pips"></div>
+    </div>
+    <div id="question-area"></div>
+    <div class="quiz-nav" id="quiz-nav"></div>
+  </div>
+
+  <!-- MODULE COMPLETE -->
+  <div id="module-complete">
+    <div class="complete-icon" id="mc-icon">🏛️</div>
+    <div class="complete-title" id="mc-title">Módulo Completo</div>
+    <div class="stars-row" id="mc-stars"></div>
+    <div class="complete-score" id="mc-score"></div>
+    <div class="complete-msg" id="mc-msg"></div>
+    <button class="gold-btn" id="mc-next-btn">Continuar</button>
+    <button class="ghost-btn" onclick="goHome()">← Volver al inicio</button>
+  </div>
+</div>
+
+<!-- RANK UNLOCK OVERLAY -->
+<div id="rank-unlock" data-flex="1">
+  <div class="rank-unlock-card">
+    <div class="rank-unlock-icon" id="ru-icon"></div>
+    <div class="rank-unlock-title">NUEVA INSIGNIA DESBLOQUEADA</div>
+    <div class="rank-unlock-name" id="ru-name"></div>
+    <div class="rank-unlock-desc" id="ru-desc"></div>
+    <button class="gold-btn" onclick="closeRankUnlock()">¡Continuar!</button>
   </div>
 </div>
 
 <div id="toast"></div>
 
 <script>
-  // ── DATA ──────────────────────────────────────────────────────────────────
-  const GROUPS = [
-    { id:'ley',      label:'Ley',                tag:'AT', cls:'g-ley',
-      books:['Génesis','Éxodo','Levítico','Números','Deuteronomio'] },
-    { id:'hist-at',  label:'Historia',           tag:'AT', cls:'g-hist-at',
-      books:['Josué','Jueces','Ruth','1° Samuel','2° Samuel','1° Reyes','2° Reyes','1° Crónicas','2° Crónicas','Esdras','Nehemías','Ester'] },
-    { id:'poe',      label:'Poesía',             tag:'AT', cls:'g-poe',
-      books:['Job','Salmos','Proverbios','Eclesiastés','Cantares'] },
-    { id:'prof-may', label:'Profetas Mayores',   tag:'AT', cls:'g-prof-may',
-      books:['Isaías','Jeremías','Lamentaciones','Ezequiel','Daniel'] },
-    { id:'prof-men', label:'Profetas Menores',   tag:'AT', cls:'g-prof-men',
-      books:['Oseas','Joel','Amós','Abdías','Jonás','Miqueas','Nahum','Habacuc','Sofonías','Hageo','Zacarías','Malaquías'] },
-    { id:'evan',     label:'Evangelios',         tag:'NT', cls:'g-evan',
-      books:['Mateo','Marcos','Lucas','Juan'] },
-    { id:'hist-nt',  label:'Iglesia',            tag:'NT', cls:'g-hist-nt',
-      books:['Hechos'] },
-    { id:'pablo',    label:'Cartas de Pablo',    tag:'NT', cls:'g-pablo',
-      books:['Romanos','1° Corintios','2° Corintios','Gálatas','Efesios','Filipenses','Colosenses','1° Tesalonicenses','2° Tesalonicenses','1° Timoteo','2° Timoteo','Tito','Filemón'] },
-    { id:'epist',    label:'Epístolas Generales',tag:'NT', cls:'g-epist',
-      books:['Hebreos','Santiago','1° Pedro','2° Pedro','1° Juan','2° Juan','3° Juan','Judas'] },
-    { id:'prof-nt',  label:'Profecía',           tag:'NT', cls:'g-prof-nt',
-      books:['Apocalipsis'] },
-  ];
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+const RANKS = [
+  { min:0,  max:19,  icon:'⚔️',  name:'Filisteo',         desc:'Apenas comienzas a conocer la Verdad. Los filisteos también la encontraron, pero no la quisieron.' },
+  { min:20, max:39,  icon:'🏛️',  name:'Fariseo',          desc:'Conoces la ley, pero ¿la vives? Los fariseos sabían mucho y cambiaron poco.' },
+  { min:40, max:59,  icon:'🌍',  name:'Gentil',           desc:'Te acercas a la Verdad desde afuera. Como el gentil que busca con el corazón abierto.' },
+  { min:60, max:79,  icon:'🤝',  name:'Simpatizante',     desc:'Tu corazón responde. Como quienes escuchaban a Jesús con genuino interés.' },
+  { min:80, max:99,  icon:'✝️',  name:'Discípulo',        desc:'Caminas en la senda. El discípulo no solo aprende, sino que obedece.' },
+  { min:100,max:100, icon:'👑',  name:'Siervo de Cristo', desc:'¡Completaste el camino! Como el escriba sincero, comprendiste lo que más importa.' },
+];
 
-  const ALL_BOOKS  = GROUPS.flatMap(g => g.books);
-  const BOOK_GROUP = {};
-  GROUPS.forEach(g => g.books.forEach(b => BOOK_GROUP[b] = g.id));
+const MODULES = [
+  {
+    id:1, icon:'🕊️', title:'El Templo Corrompido', difficulty:1,
+    desc:'Introducción al contexto histórico',
+    questions:[
+      { type:'mc', text:'¿A qué ciudad llegó Jesús al inicio de esta lección?', choices:['Belén','Nazaret','Jerusalén','Capernaum'], answer:2, verse:'Marcos 11:15', feedback:'Jesús entró a Jerusalén entre el clamor de la multitud antes de dirigirse al Templo.' },
+      { type:'tf', text:'Jesús actuó con miedo al ver lo que ocurría en el Templo, por eso esperó antes de actuar.', answer:false, verse:'Marcos 11:15-16', feedback:'Al contrario, Jesús actuó con autoridad divina, echando a los que vendían y compraban.' },
+      { type:'fill', text:'Jesús llamó al Templo una "cueva de ___________", pues había sido convertido en un mercado corrupto.', answer:'ladrones', verse:'Marcos 11:17', feedback:'Jesús citó a Jeremías 7:11 al decir que habían convertido la casa de Dios en una "cueva de ladrones".' },
+      { type:'mc', text:'¿Qué animales se vendían en el Templo a precios exorbitantes?', choices:['Bueyes y ovejas','Palomas y otros animales','Camellos y burros','Solo palomas'], answer:1, verse:'Marcos 11:15', feedback:'El Templo se había llenado de vendedores de palomas y otros animales para los sacrificios.' },
+      { type:'tf', text:'Los cambistas del Templo manipulaban el tipo de cambio de la divisa romana para su propio beneficio.', answer:true, verse:'Marcos 11:15', feedback:'El cambio se fijaba abusivamente a favor de los responsables del Templo, enriqueciéndose a costa de los adoradores.' },
+    ]
+  },
+  {
+    id:2, icon:'😡', title:'El Enojo Justo', difficulty:1,
+    desc:'La acción de Jesús en el Templo',
+    questions:[
+      { type:'mc', text:'¿Qué hizo Jesús al llegar al Templo y ver la corrupción?', choices:['Predicó una larga parábola','Echó a todos los que vendían y compraban','Se fue sin decir nada','Habló con los sacerdotes en privado'], answer:1, verse:'Marcos 11:15', feedback:'Jesús fue directamente al Templo y echó a los que vendían y compraban, volcando las mesas de los cambistas.' },
+      { type:'tf', text:'El enojo de Jesús en el Templo fue una reacción impulsiva sin fundamento espiritual.', answer:false, verse:'Marcos 11:17', feedback:'Su enojo fue justo y fundamentado: la casa de oración de Dios había sido profanada.' },
+      { type:'fill', text:'La casa de Dios debía ser llamada casa de ___________ para todas las naciones.', answer:'oración', verse:'Marcos 11:17', feedback:'Jesús citó a Isaías 56:7: "Mi casa será llamada casa de oración para todas las naciones".' },
+      { type:'order', text:'Ordena las acciones de Jesús en el Templo en el orden correcto:', items:['Volcó las mesas de los cambistas','Llegó al Templo','Enseñó al pueblo','Echó a los vendedores y compradores'], correctOrder:[1,3,0,2], feedback:'Jesús llegó, echó a los que comerciaban, volcó las mesas y luego enseñó a la multitud.' },
+      { type:'mc', text:'¿Por qué los judíos no podían resistir las acciones de Jesús según el texto?', choices:['Tenía un ejército','Su autoridad espiritual era evidente','Tenía miedo de ser detenido','Los soldados romanos lo protegían'], answer:1, verse:'Marcos 11', feedback:'El Señor actuó con reservas de poder y autoridad divinos, ante las cuales los truhanes eran incapaces de resistirse.' },
+    ]
+  },
+  {
+    id:3, icon:'🎭', title:'La Hipocresía Religiosa', difficulty:2,
+    desc:'El pecado de los dirigentes',
+    questions:[
+      { type:'mc', text:'¿Cómo describe el texto la actitud de los dirigentes religiosos ante la conducta fraudulenta en el Templo?', choices:['La denunciaban públicamente','Se oponían a ella en privado','Se encogían de hombros','La reportaban a Roma'], answer:2, verse:'Marcos 11', feedback:'Muchos judíos se encogían de hombros ante esta conducta fraudulenta, pero el Señor Jesús se llenó de indignación.' },
+      { type:'tf', text:'Los dirigentes religiosos eran genuinamente devotos a Dios pero cometían errores involuntarios.', answer:false, verse:'Marcos 11', feedback:'Lejos de temer a Dios, estos dirigentes religiosos estaban allí para llenarse los bolsillos con extorsión.' },
+      { type:'memory', text:'Une cada concepto con su descripción correcta:', pairs:[['Fariseo','Conoce la ley pero no la vive'],['Hipocresía','Aparentar lo que no se es'],['Templo','Casa de oración de Dios'],['Extorsión','Cobrar injustamente en nombre de Dios']], feedback:'Los fariseos eran expertos en aparentar piedad mientras su corazón estaba alejado de Dios.' },
+      { type:'fill', text:'La extorsión en el Templo era un chantaje llevado a cabo en nombre de ___________.', answer:'Dios', verse:'Marcos 11', feedback:'Estos hombres usaban el nombre de Dios para justificar su robo y extorsión, lo cual lo hacía aún más grave.' },
+      { type:'mc', text:'¿Cómo reaccionaron los dirigentes religiosos ante las acciones de Jesús?', choices:['Se arrepintieron','Le aplaudieron','Comenzaron a planear eliminarlo','Huyeron del Templo'], answer:2, verse:'Marcos 11', feedback:'Todo el odio y la envidia que albergaban en sus corazones afloraron y empezaron a planear la eliminación de Jesús.' },
+    ]
+  },
+  {
+    id:4, icon:'🪙', title:'Artimañas y Trampas', difficulty:2,
+    desc:'Los complots contra Jesús',
+    questions:[
+      { type:'mc', text:'¿Para qué usaron los sacerdotes a Judas?', choices:['Para predicar en el Templo','Para informarles del paradero de Jesús','Para recaudar el dinero','Para negociar con Pilato'], answer:1, verse:'Marcos 14', feedback:'Los sacerdotes utilizaron a Judas para que les informara del paradero de Jesús, aprovechando su traición.' },
+      { type:'tf', text:'El juicio a Jesús se celebró a una hora conveniente del día para garantizar justicia.', answer:false, verse:'Marcos 14:53-65', feedback:'El juicio se celebró a una hora intempestiva de la noche, violando todas las normas legales judías.' },
+      { type:'fill', text:'Los sacerdotes declararon ___________ testigos en el juicio de Jesús.', answer:'falsos', verse:'Marcos 14:56', feedback:'Solo declararon falsos testigos, pues no podían encontrar acusaciones verdaderas contra Jesús.' },
+      { type:'mc', text:'¿De qué acusaron a Jesús en el juicio ante el Sanedrín?', choices:['De robar en el Templo','De blasfemia por llamarse Hijo de Dios','De incitar una rebelión armada','De no pagar impuestos'], answer:1, verse:'Marcos 14:64', feedback:'Lo acusaron del pecado de blasfemia porque no quería —ni podía— negar la acusación de llamarse "Cristo, el Hijo de Dios".' },
+      { type:'tf', text:'Pilato creía genuinamente que Jesús era culpable de los cargos que le imputaban.', answer:false, verse:'Marcos 15', feedback:'Hasta Pilato podía ver que solo lo motivaba la envidia y el odio. Dudó, pero cedió a la presión de los sacerdotes.' },
+    ]
+  },
+  {
+    id:5, icon:'⚖️', title:'Pilato y el Calvario', difficulty:3,
+    desc:'La condena y la Cruz',
+    questions:[
+      { type:'mc', text:'¿Qué solicitaron los sacerdotes a Pilato?', choices:['La liberación de Jesús','La muerte de Jesús','El exilio de Jesús','Un nuevo juicio para Jesús'], answer:1, verse:'Marcos 15', feedback:'Los hombres supuestamente religiosos solicitaron a Pilato la muerte de Jesús, afirmando que había incitado al pueblo.' },
+      { type:'tf', text:'Los sacerdotes actuaron con honestidad al presentar el caso contra Jesús ante Pilato.', answer:false, verse:'Marcos 15', feedback:'Recurrieron a mentiras, afirmando que Jesús se había rebelado contra César, lo cual era completamente falso.' },
+      { type:'fill', text:'Para lograr la condena, los sacerdotes ___________ a la multitud para que pidiera la muerte de Jesús.', answer:'hostigaron', verse:'Marcos 15', feedback:'Los sacerdotes recurrieron a hostigar a la multitud para que se saliera con la suya, manipulando a la gente.' },
+      { type:'memory', text:'Une cada personaje con su rol en la condena de Jesús:', pairs:[['Pilato','Gobernador que cedió a la presión'],['Judas','Traicionó a Jesús por 30 monedas'],['Sacerdotes','Organizaron el complot'],['Testigos falsos','Inventaron acusaciones']], feedback:'Cada personaje jugó un papel específico en el plan para eliminar a Jesús.' },
+      { type:'mc', text:'¿Qué dijeron los sacerdotes burlándose de Jesús en la Cruz?', choices:['"¡Si eres rey, baja!"','"A otros salvó, a sí mismo no se puede salvar"','"¡Destruye el Templo!"','"¡Llama a Elías!"'], answer:1, verse:'Marcos 15:31', feedback:'Dijeron "A otros salvó, a sí mismo no se puede salvar", palabras que resonarán en sus oídos en la eternidad.' },
+    ]
+  },
+  {
+    id:6, icon:'📖', title:'La Actitud de Dios', difficulty:3,
+    desc:'El pecado y la misericordia divina',
+    questions:[
+      { type:'mc', text:'¿Con qué NO contempla Dios el pecado y la hipocresía según el texto?', choices:['Con juicio','Con castigo eterno','Con indiferencia','Con santidad'], answer:2, verse:'Marcos 11', feedback:'La actitud de Dios hacia el pecado y la hipocresía sigue siendo la misma: no la contempla con indiferencia.' },
+      { type:'tf', text:'Según el texto, Dios enviará castigo eterno solo a los que no se hayan arrepentido en vida.', answer:true, verse:'Marcos 11', feedback:'Dios odia el pecado y un día vendrá a juzgar al mundo, enviando castigo eterno a todos los que no se han arrepentido.' },
+      { type:'fill', text:'Dios ___________ el pecado, pero ama al pecador que se arrepiente con sinceridad.', answer:'odia', verse:'Marcos 11', feedback:'El texto es claro: Dios odia el pecado. Esto no contradice su amor, sino que lo hace más extraordinario.' },
+      { type:'order', text:'Ordena los pasos del proceso de misericordia divina según el texto:', items:['Dios cambia el corazón duro','El pecador reconoce su necesidad','Dios lava todos los pecados','El Señor escucha las oraciones'], correctOrder:[1,3,0,2], feedback:'El proceso comienza cuando reconocemos nuestra necesidad; Dios entonces escucha, cambia el corazón y lava el pecado.' },
+      { type:'mc', text:'¿Qué hace el Señor Jesús con los corazones de piedra según el texto?', choices:['Los juzga inmediatamente','Los quita y los reemplaza por corazones que perciben','Los endurece más','Los guarda para el juicio final'], answer:1, verse:'Marcos 12', feedback:'El Señor mismo ha quitado nuestros fríos corazones de piedra y los ha reemplazado por corazones que le perciben y le conocen.' },
+    ]
+  },
+  {
+    id:7, icon:'✍️', title:'El Escriba Sincero', difficulty:4,
+    desc:'El contraste con la hipocresía',
+    questions:[
+      { type:'mc', text:'¿Con qué actitud se acercó el escriba sincero a Jesús?', choices:['Con intención de acusarlo','Con una pregunta sincera','Con burla y desprecio','Con miedo a los fariseos'], answer:1, verse:'Marcos 12:28', feedback:'Este escriba acudió a Jesús con una pregunta sincera, a diferencia de los que buscaban cómo acusarlo.' },
+      { type:'tf', text:'El escriba del que habla Marcos 12 era un creyente cuando habló con Jesús.', answer:false, verse:'Marcos 12', feedback:'El texto aclara que este escriba no era aún creyente, pero el Señor advirtió y aceptó de buen grado su sinceridad.' },
+      { type:'fill', text:'El escriba sincero comprendió que el ___________ es más importante que cualquier otra cosa.', answer:'amor', verse:'Marcos 12:33', feedback:'El escriba comprendió que el amor a Dios es más importante que cualquier rito o sacrificio externo.' },
+      { type:'memory', text:'Une cada actitud con el personaje que la representaba:', pairs:[['Sinceridad','El escriba de Marcos 12'],['Hipocresía','Los fariseos en el Templo'],['Traición','Judas Iscariote'],['Cobardía','Pilato ante la multitud']], feedback:'Cada personaje en esta historia representa una actitud diferente ante la Verdad.' },
+      { type:'mc', text:'¿Qué señaló Jesús sobre el escriba al final del diálogo?', choices:['Que era un hipócrita','Que no estaba lejos del reino de Dios','Que debía ir al Templo','Que era el más sabio de Israel'], answer:1, verse:'Marcos 12:34', feedback:'Jesús le dijo que no estaba lejos del reino de Dios, reconociendo su honestidad y apertura a la Verdad.' },
+    ]
+  },
+  {
+    id:8, icon:'🙏', title:'El Amor Verdadero', difficulty:4,
+    desc:'La respuesta al evangelio',
+    questions:[
+      { type:'mc', text:'Según Marcos 12:33, ¿qué vale más que todos los holocaustos y sacrificios?', choices:['Dar dinero al Templo','Guardar el sábado','Amar a Dios y al prójimo','Conocer la Ley de Memoria'], answer:2, verse:'Marcos 12:33', feedback:'El escriba comprendió que amar a Dios con todo el corazón y al prójimo vale más que todos los sacrificios externos.' },
+      { type:'tf', text:'Amar a Dios con todo el corazón hace imposible que uno también ame al prójimo.', answer:false, verse:'Marcos 12:30-31', feedback:'Jesús une ambos mandamientos: el amor a Dios se expresa naturalmente en el amor al prójimo.' },
+      { type:'fill', text:'El amor a Dios debe ser con todo el corazón, el alma, la mente y las ___________.', answer:'fuerzas', verse:'Marcos 12:30', feedback:'Marcos 12:30 dice: "Amarás al Señor tu Dios con todo tu corazón, con toda tu alma, con toda tu mente y con todas tus fuerzas".' },
+      { type:'order', text:'Ordena las dimensiones del amor a Dios según Marcos 12:30:', items:['Con todas las fuerzas','Con todo el corazón','Con toda la mente','Con toda el alma'], correctOrder:[1,3,2,0], feedback:'El orden en Marcos 12:30 es: corazón, alma, mente y fuerzas — cubriendo todo el ser humano.' },
+      { type:'mc', text:'¿Qué ocurre cuando empezamos a comprender la gracia de Cristo según el texto?', choices:['Nos volvemos orgullosos de nuestra fe','Nos llenamos de vergüenza y amor hacia el Salvador','Perdemos el interés en la Ley','Buscamos más sacrificios externos'], answer:1, verse:'Marcos 12', feedback:'Al comprender estas cosas, nos llenaremos de vergüenza y nos abrumará el amor hacia el Salvador que dio su vida por nosotros.' },
+    ]
+  },
+  {
+    id:9, icon:'🔥', title:'La Verdad Desenmascarada', difficulty:5,
+    desc:'Síntesis del pecado y la gracia',
+    questions:[
+      { type:'mc', text:'¿Qué tienen en común el fariseo hipócrita y el creyente moderno que solo aparenta?', choices:['Ambos conocen la Biblia perfectamente','Ambos usan la religión para esconder el verdadero estado de su corazón','Ambos rechazaron explícitamente a Jesús','Nada, son situaciones completamente distintas'], answer:1, verse:'Marcos 11-12', feedback:'La hipocresía religiosa no es exclusiva de los fariseos; cualquiera puede usar la apariencia religiosa para ocultar su verdadero corazón.' },
+      { type:'tf', text:'Las personas pueden hacerse perfectas a sí mismas ante los ojos de Dios mediante esfuerzo propio, como hacían los fariseos.', answer:false, verse:'Marcos 12', feedback:'El texto es claro: las personas no pueden hacerse a sí mismas perfectas ante Dios. Solo Él puede cambiar el corazón.' },
+      { type:'fill', text:'El Señor escucha nuestras oraciones solo cuando admitimos nuestro ___________ y nuestra necesidad de conversión.', answer:'pecado', verse:'Marcos 12', feedback:'Es al reconocer nuestro pecado y necesidad de misericordia que Dios escucha y actúa en nuestro corazón.' },
+      { type:'memory', text:'Une cada enseñanza con su lección principal:', pairs:[['El Templo corrompido','La religión sin corazón es vacía'],['El escriba sincero','La honestidad abre el camino a Dios'],['La Cruz','El amor de Dios por el pecador'],['El juicio falso','La hipocresía siempre se revela']], feedback:'Cada elemento de esta historia enseña una verdad fundamental sobre la fe auténtica.' },
+      { type:'mc', text:'¿Qué descubrirían los sacerdotes en la eternidad según el texto?', choices:['Que Jesús no era el Hijo de Dios','Que si lo hubiesen escuchado, Él deseaba salvarlos','Que habían tomado la decisión correcta','Que el juicio fue justo'], answer:1, verse:'Marcos 15', feedback:'Las palabras de burla resonarán en sus oídos para siempre, cuando comprendan que si le hubiesen escuchado, Él deseaba salvarlos.' },
+    ]
+  },
+  {
+    id:10, icon:'👑', title:'Siervo de Cristo', difficulty:5,
+    desc:'El desafío final — ¿Quién dices que es Él?',
+    questions:[
+      { type:'mc', text:'¿Cuál es la única conclusión posible sobre Jesús según lo que enseña el texto?', choices:['Fue un gran maestro moral','Fue un profeta más de Israel','Es el Señor que merece nuestra completa devoción','Fue víctima de un malentendido político'], answer:2, verse:'Marcos 12:28-34', feedback:'El texto nos lleva a la misma conclusión que el escriba sincero: Jesús es el Señor que merece ser amado con todo nuestro ser.' },
+      { type:'tf', text:'Según el texto, servir a Cristo con todo el corazón, alma y mente será un deber imposible para quien lo desee sinceramente.', answer:false, verse:'Marcos 12', feedback:'Amarle con todo el corazón no será un deber imposible, sino que desearemos servirle cuando descubramos lo que Él hizo por nosotros.' },
+      { type:'fill', text:'El Señor ha quitado nuestros corazones de ___________ y los ha reemplazado por corazones que le perciben y le conocen.', answer:'piedra', verse:'Marcos 12', feedback:'Esta es la obra del Espíritu Santo: quitar el corazón de piedra y dar un corazón nuevo que responde a Dios.' },
+      { type:'order', text:'Ordena el camino de transformación del creyente según el texto:', items:['Anhelar agradar a Cristo','Comprender la gracia de Cristo','Servir a Cristo libremente','Llenarse de vergüenza y amor'], correctOrder:[1,3,0,2], feedback:'Primero comprendemos la gracia, luego el amor nos llena, luego anhelamos agradarle, y finalmente le servimos libremente.' },
+      { type:'mc', text:'Completa la oración del texto: "Yo quiero más y más de Cristo, yo quiero más de su poder, yo quiero más de su presencia..."', choices:['"...yo quiero más de su Templo"','"...yo quiero más y más de Él"','"...yo quiero más de su ley"','"...yo quiero más de su juicio"'], answer:1, verse:'Marcos 12', feedback:'"Yo quiero más y más de Él" — esta es la oración del corazón transformado, que no busca la religión externa sino a Cristo mismo.' },
+    ]
+  },
+];
 
-  let placed      = {};       // book -> groupId
-  let correct     = new Set();
-  let selectedBook = null;    // currently selected book (tap mode)
-  let poolOrder   = [];       // stable order for pool chips
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+let state = {
+  completedModules: JSON.parse(localStorage.getItem('falsedad_completed') || '[]'),
+  scores: JSON.parse(localStorage.getItem('falsedad_scores') || '{}'),
+  totalCorrect: parseInt(localStorage.getItem('falsedad_total') || '0'),
+  currentRank: 0,
+};
 
-  // ── INIT ──────────────────────────────────────────────────────────────────
-  function init() {
-    placed = {}; correct = new Set(); selectedBook = null;
-    poolOrder = shuffle(ALL_BOOKS); // shuffle ONCE at start
-    renderGroups();
-    renderPool();
-    updateScore();
-    updateInstruction();
+let quiz = { moduleIdx:0, questionIdx:0, answers:[], correct:0, answered:false, memPairs:[], memSelected:null, memMatched:[], orderSelected:[] };
+
+// ══════════════════════════════════════════════════════════
+// RANKS
+// ══════════════════════════════════════════════════════════
+function getProgress() {
+  const total = MODULES.length * 5;
+  return Math.round((state.totalCorrect / total) * 100);
+}
+
+function getCurrentRank() {
+  const p = getProgress();
+  return RANKS.findLast(r => p >= r.min) || RANKS[0];
+}
+
+function updateTopBar() {
+  const rank = getCurrentRank();
+  document.getElementById('rank-icon').textContent = rank.icon;
+  document.getElementById('rank-name').textContent = rank.name.toUpperCase();
+  const p = getProgress();
+  document.getElementById('progress-fill').style.width = p + '%';
+  document.getElementById('progress-label').textContent = `${state.totalCorrect} / ${MODULES.length*5} preguntas`;
+  document.getElementById('score-chip').textContent = `⭐ ${state.totalCorrect}`;
+}
+
+// ══════════════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════════════
+function renderHome() {
+  show('home'); hide('quiz-screen'); hide('module-complete');
+  const grid = document.getElementById('modules-grid');
+  grid.innerHTML = '';
+  MODULES.forEach((mod, i) => {
+    const done = state.completedModules.includes(mod.id);
+    const unlocked = i === 0 || state.completedModules.includes(MODULES[i-1].id);
+    const btn = document.createElement('div');
+    btn.className = 'module-btn ' + (done ? 'completed' : unlocked ? 'unlocked' : 'locked');
+    const dots = Array(5).fill(0).map((_,d) => `<span class="${d < mod.difficulty ? 'lit':''}"></span>`).join('');
+    const score = state.scores[mod.id];
+    btn.innerHTML = `
+      <div class="mod-icon">${mod.icon}</div>
+      <div class="mod-info">
+        <div class="mod-num">Módulo ${mod.id}</div>
+        <div class="mod-title">${mod.title}</div>
+        <div class="mod-desc">${mod.desc}</div>
+        <div class="difficulty-dots">${dots}</div>
+      </div>
+      <div class="mod-status">${done ? (score===5?'⭐':'✅') : unlocked ? '▶️' : '🔒'}</div>
+    `;
+    if (unlocked) btn.addEventListener('click', () => startModule(i));
+    grid.appendChild(btn);
+  });
+  updateTopBar();
+}
+
+function goHome() { saveState(); renderHome(); }
+
+// ══════════════════════════════════════════════════════════
+// QUIZ
+// ══════════════════════════════════════════════════════════
+function startModule(idx) {
+  quiz = { moduleIdx:idx, questionIdx:0, answers:[], correct:0, answered:false, memPairs:[], memSelected:null, memMatched:[], orderSelected:[] };
+  hide('home'); hide('module-complete');
+  show('quiz-screen');
+  renderQuestion();
+  document.getElementById('app').scrollTo(0,0);
+}
+
+function renderQuestion() {
+  const mod = MODULES[quiz.moduleIdx];
+  const q = mod.questions[quiz.questionIdx];
+  quiz.answered = false;
+  quiz.memSelected = null;
+  quiz.memMatched = [];
+  quiz.orderSelected = [];
+
+  document.getElementById('qm-title').textContent = `${mod.icon} ${mod.title}`;
+  document.getElementById('qm-num').textContent = `Pregunta ${quiz.questionIdx+1} de ${mod.questions.length}`;
+
+  // Pips
+  const pips = document.getElementById('q-pips');
+  pips.innerHTML = mod.questions.map((_,i) => {
+    let cls = i < quiz.questionIdx ? 'q-pip done' : i===quiz.questionIdx ? 'q-pip current' : 'q-pip';
+    return `<div class="${cls}"></div>`;
+  }).join('');
+
+  // Question area
+  const area = document.getElementById('question-area');
+  area.innerHTML = '';
+  const card = document.createElement('div');
+  card.className = 'question-card';
+
+  const typeLabels = {mc:'Selección múltiple',tf:'Verdadero o Falso',fill:'Completar',memory:'Parejas',order:'Ordenar'};
+  card.innerHTML = `<div class="q-type-badge">${typeLabels[q.type]||q.type}</div><div class="q-text">${q.text}</div>${q.verse?`<div class="q-verse">📖 ${q.verse}</div>`:''}`;
+
+  // Build question UI
+  let questionUI = '';
+  if (q.type==='mc') questionUI = buildMC(q);
+  else if (q.type==='tf') questionUI = buildTF(q);
+  else if (q.type==='fill') questionUI = buildFill(q);
+  else if (q.type==='memory') { card.appendChild(buildMemory(q)); }
+  else if (q.type==='order') { card.appendChild(buildOrder(q)); }
+
+  if (questionUI) card.innerHTML += questionUI;
+
+  const fb = document.createElement('div');
+  fb.className = 'feedback-box'; fb.id = 'feedback-box';
+  card.appendChild(fb);
+  area.appendChild(card);
+
+  // Nav
+  const nav = document.getElementById('quiz-nav');
+  nav.innerHTML = '';
+  if (quiz.questionIdx > 0) {
+    // no back btn for simplicity
   }
+  const nextBtn = document.createElement('button');
+  nextBtn.className = 'nav-btn nav-btn-primary'; nextBtn.id = 'next-btn';
+  nextBtn.textContent = quiz.answered ? (quiz.questionIdx < mod.questions.length-1 ? 'Siguiente →' : 'Finalizar módulo') : 'Confirmar';
+  nextBtn.addEventListener('click', onNextOrConfirm);
+  nav.appendChild(nextBtn);
+}
 
-  function shuffle(arr) {
-    const a = [...arr];
-    for (let i = a.length-1; i>0; i--) {
-      const j = Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
-    }
-    return a;
-  }
+function buildMC(q) {
+  return `<div class="choices">${q.choices.map((c,i)=>`<button class="choice-btn" onclick="selectChoice(${i})">${c}</button>`).join('')}</div>`;
+}
+function buildTF(q) {
+  return `<div class="tf-wrap"><button class="tf-btn" onclick="selectTF(true)">✅ Verdadero</button><button class="tf-btn" onclick="selectTF(false)">❌ Falso</button></div>`;
+}
+function buildFill(q) {
+  return `<div class="fill-wrap"><input class="fill-input" id="fill-input" type="text" placeholder="Escribe tu respuesta..." autocomplete="off" autocorrect="off" spellcheck="false"/></div>`;
+}
+function buildMemory(q) {
+  // Flatten and shuffle pairs
+  let cards = [];
+  q.pairs.forEach((pair,i) => { cards.push({id:i+'a',pairId:i,text:pair[0]}); cards.push({id:i+'b',pairId:i,text:pair[1]}); });
+  cards = cards.sort(()=>Math.random()-0.5);
+  quiz.memPairs = cards;
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="memory-instructions">Toca dos tarjetas para emparejar concepto con definición</div>`;
+  const grid = document.createElement('div'); grid.className = 'memory-grid'; grid.id = 'memory-grid';
+  cards.forEach(c => {
+    const el = document.createElement('div');
+    el.className = 'mem-card'; el.dataset.id = c.id; el.dataset.pairId = c.pairId;
+    el.textContent = c.text;
+    el.addEventListener('click', () => onMemCardClick(c.id, c.pairId));
+    grid.appendChild(el);
+  });
+  wrap.appendChild(grid);
+  return wrap;
+}
+function buildOrder(q) {
+  let items = q.items.map((t,i)=>({text:t,origIdx:i})).sort(()=>Math.random()-0.5);
+  quiz.orderItems = items;
+  quiz.orderSelected = [];
+  const wrap = document.createElement('div');
+  wrap.innerHTML = `<div class="memory-instructions">Toca los elementos en el orden correcto (1 → último)</div>`;
+  const list = document.createElement('div'); list.className = 'order-list'; list.id = 'order-list';
+  items.forEach((item,i) => {
+    const el = document.createElement('div');
+    el.className = 'order-item'; el.dataset.idx = i;
+    el.innerHTML = `<span class="order-num" id="onum-${i}">·</span><span>${item.text}</span>`;
+    el.addEventListener('click', () => onOrderClick(i));
+    list.appendChild(el);
+  });
+  wrap.appendChild(list);
+  return wrap;
+}
 
-  // ── RENDER ────────────────────────────────────────────────────────────────
-  function renderGroups() {
-    const area = document.getElementById('groups-area');
-    area.innerHTML = '';
-    GROUPS.forEach(g => {
-      const card = document.createElement('div');
-      card.className = `group-card ${g.cls}`;
-      card.dataset.group = g.id;
-      card.innerHTML = `
-        <div class="group-header">
-          <h3>${g.label}</h3>
-          <span class="tag">${g.tag}</span>
-        </div>
-        <div class="group-drop" id="drop-${g.id}" data-group="${g.id}"></div>
-        <div class="group-count" id="count-${g.id}">0 / ${g.books.length}</div>
-      `;
-      // Tap-to-place on card
-      card.addEventListener('click', () => onGroupTap(g.id));
-      // Desktop drag-and-drop
-      const drop = card.querySelector('.group-drop');
-      drop.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drop-target'); });
-      drop.addEventListener('dragleave', () => card.classList.remove('drop-target'));
-      drop.addEventListener('drop', e => { e.preventDefault(); card.classList.remove('drop-target'); placeBook(e.dataTransfer.getData('book'), g.id); });
-      area.appendChild(card);
-    });
-  }
+// ── INTERACTIONS ────────────────────────────────────────
+let mcSelected = null, tfSelected = null;
 
-  function renderPool() {
-    const pool = document.getElementById('books-pool');
-    pool.innerHTML = '';
-    poolOrder.forEach(book => {
-      if (!placed[book]) pool.appendChild(makeChip(book, false, false));
-    });
-    // Re-render placed books
-    GROUPS.forEach(g => {
-      const drop = document.getElementById(`drop-${g.id}`);
-      if (drop) drop.innerHTML = '';
-    });
-    Object.entries(placed).forEach(([book, gid]) => {
-      const drop = document.getElementById(`drop-${gid}`);
-      if (drop) drop.appendChild(makeChip(book, correct.has(book), true));
-    });
-    // Pool tap target: return selected book to pool
-    pool.addEventListener('click', e => {
-      if (e.target === pool && selectedBook) deselectBook();
-    });
-    // Pool drag-over
-    pool.addEventListener('dragover', e => { e.preventDefault(); pool.classList.add('drop-target'); });
-    pool.addEventListener('dragleave', () => pool.classList.remove('drop-target'));
-    pool.addEventListener('drop', e => {
-      e.preventDefault();
-      pool.classList.remove('drop-target');
-      const book = e.dataTransfer.getData('book');
-      if (book && !correct.has(book)) {
-        delete placed[book];
-        renderPool(); updateScore();
+function selectChoice(i) {
+  if (quiz.answered) return;
+  mcSelected = i;
+  document.querySelectorAll('.choice-btn').forEach((b,idx) => {
+    b.classList.toggle('selected', idx===i);
+  });
+}
+function selectTF(val) {
+  if (quiz.answered) return;
+  tfSelected = val;
+  document.querySelectorAll('.tf-btn').forEach(b => b.classList.remove('selected'));
+  document.querySelector(`.tf-btn:${val?'first':'last'}-child`).classList.add('selected');
+}
+
+function onMemCardClick(id, pairId) {
+  if (quiz.answered) return;
+  const q = MODULES[quiz.moduleIdx].questions[quiz.questionIdx];
+  const el = document.querySelector(`[data-id="${id}"]`);
+  if (el.classList.contains('matched')) return;
+  if (quiz.memSelected === id) { el.classList.remove('selected'); quiz.memSelected = null; return; }
+  if (quiz.memSelected !== null) {
+    const prevEl = document.querySelector(`[data-id="${quiz.memSelected}"]`);
+    const prevPairId = parseInt(prevEl.dataset.pairId);
+    const curPairId = parseInt(pairId);
+    if (prevPairId === curPairId && quiz.memSelected !== id) {
+      // Match!
+      el.classList.add('matched'); prevEl.classList.add('matched');
+      quiz.memMatched.push(pairId);
+      quiz.memSelected = null;
+      if (quiz.memMatched.length === q.pairs.length) {
+        setTimeout(() => { showFeedback(true, q.feedback); quiz.answered = true; updateNextBtn(); }, 300);
       }
-    });
-    updateCounts();
-  }
-
-  function makeChip(book, isCorrect=false, inGroup=false) {
-    const chip = document.createElement('div');
-    chip.className = 'book-chip' + (isCorrect ? ' correct' : '');
-    if (selectedBook === book) chip.classList.add('selected');
-    chip.dataset.book = book;
-
-    const label = document.createElement('span');
-    label.textContent = book;
-    chip.appendChild(label);
-
-    if (inGroup && !isCorrect) {
-      const btn = document.createElement('span');
-      btn.className = 'remove-btn';
-      btn.textContent = '✕';
-      btn.title = 'Quitar libro';
-      btn.addEventListener('click', e => { e.stopPropagation(); returnToPool(book); });
-      chip.appendChild(btn);
-    }
-
-    if (!isCorrect) {
-      // Tap interaction
-      chip.addEventListener('click', e => { e.stopPropagation(); onChipTap(book, inGroup); });
-      // Desktop drag
-      chip.draggable = true;
-      chip.addEventListener('dragstart', e => {
-        e.dataTransfer.setData('book', book);
-        chip.classList.add('dragging');
-        if (selectedBook) deselectBook();
-      });
-      chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
-    }
-
-    return chip;
-  }
-
-  // ── TAP LOGIC ─────────────────────────────────────────────────────────────
-  function onChipTap(book, inGroup) {
-    if (selectedBook === book) {
-      deselectBook();
-      return;
-    }
-    // Remove selected class from previous chip without re-rendering
-    if (selectedBook) {
-      const prev = document.querySelector(`.book-chip[data-book="${CSS.escape(selectedBook)}"]`);
-      if (prev) prev.classList.remove('selected');
-    }
-    selectedBook = book;
-    // Add selected class to new chip without re-rendering
-    const chip = document.querySelector(`.book-chip[data-book="${CSS.escape(book)}"]`);
-    if (chip) chip.classList.add('selected');
-    updateInstruction(book);
-  }
-
-  function onGroupTap(gid) {
-    if (!selectedBook) return;
-    placeBook(selectedBook, gid);
-    selectedBook = null;
-    updateInstruction();
-  }
-
-  function deselectBook() {
-    if (selectedBook) {
-      const chip = document.querySelector(`.book-chip[data-book="${CSS.escape(selectedBook)}"]`);
-      if (chip) chip.classList.remove('selected');
-    }
-    selectedBook = null;
-    updateInstruction();
-  }
-
-  // ── PLACE BOOK ────────────────────────────────────────────────────────────
-  function placeBook(book, gid) {
-    if (!book || correct.has(book)) return;
-    const expectedGid = BOOK_GROUP[book];
-    placed[book] = gid;
-
-    if (gid === expectedGid) {
-      correct.add(book);
-      showToast(`✅ ¡Correcto! "${book}"`, 'success');
     } else {
-      correct.delete(book);
-      showToast(`❌ "${book}" no va ahí`, 'error');
-      setTimeout(() => {
-        const chip = document.querySelector(`[data-book="${book}"]`);
-        if (chip) { chip.classList.add('wrong-shake'); setTimeout(()=>chip.classList.remove('wrong-shake'),500); }
-      }, 50);
-    }
-
-    renderPool();
-    updateScore();
-    checkWin();
-  }
-
-  function returnToPool(book) {
-    delete placed[book];
-    correct.delete(book);
-    renderPool();
-    updateScore();
-  }
-
-  // ── UI HELPERS ────────────────────────────────────────────────────────────
-  function updateInstruction(book) {
-    const el = document.getElementById('instruction');
-    if (book) {
-      el.textContent = `📖 "${book}" seleccionado — toca el grupo donde pertenece`;
       el.classList.add('selected');
-    } else {
-      el.textContent = '👆 Toca un libro y luego toca el grupo donde pertenece';
-      el.classList.remove('selected');
+      // Wrong pair — flash and reset
+      setTimeout(() => {
+        el.classList.add('wrong-flash'); prevEl.classList.add('wrong-flash');
+        setTimeout(() => { el.classList.remove('selected','wrong-flash'); prevEl.classList.remove('selected','wrong-flash'); }, 600);
+      }, 100);
+      quiz.memSelected = null;
     }
+  } else {
+    quiz.memSelected = id;
+    el.classList.add('selected');
   }
+}
 
-  const RANKS = [
-    { min:  0, max: 10, label: '🗡️ Filisteo',       bg: '#e8e8e8', color: '#555555' },
-    { min: 11, max: 25, label: '🏛️ Fariseo',         bg: '#f5edfb', color: '#7b3fa0' },
-    { min: 26, max: 40, label: '🌍 Gentil',           bg: '#fff8e6', color: '#c27c00' },
-    { min: 41, max: 55, label: '🤝 Simpatizante',     bg: '#e4f4f8', color: '#0d6e8a' },
-    { min: 56, max: 65, label: '✝️ Discípulo',        bg: '#e9f7ef', color: '#1d7a4a' },
-    { min: 66, max: 66, label: '👑 Siervo de Cristo', bg: '#fff3cd', color: '#856404' },
-  ];
-
-  function getRank(n) {
-    return RANKS.find(r => n >= r.min && n <= r.max) || RANKS[0];
-  }
-
-  function updateScore() {
-    const n = correct.size;
-    document.getElementById('score-badge').textContent = `✅ ${n} / 66`;
-    document.getElementById('progress-bar').style.width = `${(n/66)*100}%`;
-    const rank = getRank(n);
-    const badge = document.getElementById('rank-badge');
-    const prev = badge.textContent;
-    badge.textContent = rank.label;
-    badge.style.background = rank.bg;
-    badge.style.color = rank.color;
-    // Pulse animation on rank change
-    if (prev !== rank.label) {
-      badge.style.transform = 'scale(1.18)';
-      setTimeout(() => badge.style.transform = 'scale(1)', 300);
-    }
-  }
-
-  function updateCounts() {
-    GROUPS.forEach(g => {
-      const inGroup = Object.entries(placed).filter(([,gid])=>gid===g.id).length;
-      const el = document.getElementById(`count-${g.id}`);
-      if (el) el.textContent = `${inGroup} / ${g.books.length}`;
+function onOrderClick(idx) {
+  if (quiz.answered) return;
+  const el = document.querySelector(`[data-idx="${idx}"]`);
+  if (el.classList.contains('correct') || el.classList.contains('wrong')) return;
+  if (quiz.orderSelected.includes(idx)) return;
+  quiz.orderSelected.push(idx);
+  const num = quiz.orderSelected.length;
+  document.getElementById(`onum-${idx}`).textContent = num;
+  el.classList.add('selected-order');
+  const q = MODULES[quiz.moduleIdx].questions[quiz.questionIdx];
+  if (quiz.orderSelected.length === q.items.length) {
+    // Check order
+    const correct = quiz.orderSelected.every((selIdx, pos) => {
+      return quiz.orderItems[selIdx].origIdx === q.correctOrder[pos];
     });
+    quiz.orderSelected.forEach((selIdx, pos) => {
+      const el2 = document.querySelector(`[data-idx="${selIdx}"]`);
+      const isCorrect = quiz.orderItems[selIdx].origIdx === q.correctOrder[pos];
+      el2.classList.remove('selected-order');
+      el2.classList.add(isCorrect ? 'correct' : 'wrong');
+    });
+    quiz.answered = true;
+    showFeedback(correct, q.feedback);
+    if (correct) quiz.correct++;
+    updateNextBtn();
+  }
+}
+
+function onNextOrConfirm() {
+  const mod = MODULES[quiz.moduleIdx];
+  const q = mod.questions[quiz.questionIdx];
+
+  if (!quiz.answered) {
+    // Confirm answer
+    if (q.type === 'mc') {
+      if (mcSelected === null) { showToast('Selecciona una opción'); return; }
+      const correct = mcSelected === q.answer;
+      document.querySelectorAll('.choice-btn').forEach((b,i) => {
+        if (i===q.answer) b.classList.add('correct');
+        else if (i===mcSelected && !correct) b.classList.add('wrong');
+        b.classList.remove('selected');
+      });
+      if (correct) quiz.correct++;
+      showFeedback(correct, q.feedback);
+    } else if (q.type === 'tf') {
+      if (tfSelected === null) { showToast('Selecciona Verdadero o Falso'); return; }
+      const correct = tfSelected === q.answer;
+      document.querySelectorAll('.tf-btn').forEach(b => {
+        const isTrue = b.textContent.includes('Verdadero');
+        if (isTrue === q.answer) b.classList.add('correct');
+        else if (isTrue === tfSelected && !correct) b.classList.add('wrong');
+        b.classList.remove('selected');
+      });
+      if (correct) quiz.correct++;
+      showFeedback(correct, q.feedback);
+    } else if (q.type === 'fill') {
+      const inp = document.getElementById('fill-input');
+      const val = inp.value.trim().toLowerCase();
+      const correct = val === q.answer.toLowerCase() || val.includes(q.answer.toLowerCase());
+      inp.classList.add(correct ? 'correct' : 'wrong');
+      inp.disabled = true;
+      if (correct) quiz.correct++;
+      showFeedback(correct, q.feedback);
+    } else if (q.type === 'memory' || q.type === 'order') {
+      showToast('Completa la actividad primero'); return;
+    }
+    quiz.answered = true;
+    mcSelected = null; tfSelected = null;
+    updateNextBtn();
+  } else {
+    // Next question or finish
+    if (quiz.questionIdx < mod.questions.length - 1) {
+      quiz.questionIdx++;
+      renderQuestion();
+      document.getElementById('app').scrollTo(0,0);
+    } else {
+      finishModule();
+    }
+  }
+}
+
+function updateNextBtn() {
+  const mod = MODULES[quiz.moduleIdx];
+  const btn = document.getElementById('next-btn');
+  if (btn) btn.textContent = quiz.questionIdx < mod.questions.length-1 ? 'Siguiente →' : 'Finalizar módulo';
+}
+
+function showFeedback(correct, msg) {
+  const fb = document.getElementById('feedback-box');
+  fb.className = 'feedback-box ' + (correct ? 'correct' : 'wrong');
+  fb.style.display = 'block';
+  fb.innerHTML = `<div class="feedback-icon">${correct ? '✅' : '❌'}</div>${msg}`;
+}
+
+// ══════════════════════════════════════════════════════════
+// MODULE COMPLETE
+// ══════════════════════════════════════════════════════════
+function finishModule() {
+  const mod = MODULES[quiz.moduleIdx];
+  const prevRank = getCurrentRank();
+
+  // Update state
+  if (!state.completedModules.includes(mod.id)) state.completedModules.push(mod.id);
+  const prevScore = state.scores[mod.id] || 0;
+  state.scores[mod.id] = quiz.correct;
+  const scoreDiff = quiz.correct - prevScore;
+  if (scoreDiff > 0) state.totalCorrect = Math.min(MODULES.length*5, state.totalCorrect + scoreDiff);
+  if (!prevScore) state.totalCorrect = Math.min(MODULES.length*5, state.totalCorrect + quiz.correct - (prevScore||0));
+
+  // Recalculate total properly
+  state.totalCorrect = Object.values(state.scores).reduce((a,b)=>a+b,0);
+  saveState();
+  updateTopBar();
+
+  const newRank = getCurrentRank();
+  const rankChanged = newRank.name !== prevRank.name;
+
+  hide('quiz-screen');
+  show('module-complete');
+  document.getElementById('app').scrollTo(0,0);
+
+  const pct = Math.round((quiz.correct/mod.questions.length)*100);
+  const stars = quiz.correct >= 5 ? '⭐⭐⭐' : quiz.correct >= 4 ? '⭐⭐' : quiz.correct >= 3 ? '⭐' : '';
+  const msgs = ['Sigue estudiando, la Verdad vale el esfuerzo.','Bien, pero hay más por aprender.','¡Buen trabajo! La Palabra va echando raíces.','¡Excelente! Demuestras verdadero conocimiento.','¡Perfecto! Eres un Siervo de Cristo en formación.'];
+
+  document.getElementById('mc-icon').textContent = mod.icon;
+  document.getElementById('mc-title').textContent = `${mod.title} — Completado`;
+  document.getElementById('mc-stars').textContent = stars;
+  document.getElementById('mc-score').textContent = `${quiz.correct} / ${mod.questions.length}`;
+  document.getElementById('mc-msg').textContent = msgs[Math.min(quiz.correct, msgs.length-1)];
+
+  const nextBtn = document.getElementById('mc-next-btn');
+  const nextIdx = quiz.moduleIdx + 1;
+  if (nextIdx < MODULES.length) {
+    nextBtn.textContent = `Siguiente: ${MODULES[nextIdx].title} →`;
+    nextBtn.onclick = () => startModule(nextIdx);
+  } else {
+    nextBtn.textContent = '🏆 Ver resumen final';
+    nextBtn.onclick = goHome;
   }
 
-  function checkWin() {
-    if (correct.size === 66) setTimeout(() => showModal(true), 400);
-  }
+  if (rankChanged) setTimeout(() => showRankUnlock(newRank), 800);
+}
 
-  function checkAll() {
-    showModal(false);
-  }
+function showRankUnlock(rank) {
+  document.getElementById('ru-icon').textContent = rank.icon;
+  document.getElementById('ru-name').textContent = rank.name;
+  document.getElementById('ru-desc').textContent = rank.desc;
+  const el = document.getElementById('rank-unlock');
+  el.style.display = 'flex';
+}
+function closeRankUnlock() { document.getElementById('rank-unlock').style.display = 'none'; }
 
-  function showModal(isWin) {
-    const pct = Math.round((correct.size/66)*100);
-    document.getElementById('modal-emoji').textContent  = isWin ? '🏆' : pct >= 70 ? '🎯' : '📖';
-    document.getElementById('modal-title').textContent  = isWin ? '¡Completado!' : 'Progreso actual';
-    document.getElementById('modal-score').textContent  = `${correct.size} / 66`;
-    document.getElementById('modal-msg').textContent    = isWin
-      ? '¡Clasificaste todos los libros correctamente! Conoces muy bien tu Biblia.'
-      : `Tienes ${correct.size} libros en su lugar correcto. ¡Sigue intentando!`;
-    document.getElementById('modal-overlay').classList.add('show');
-  }
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+function show(id) {
+  const el = document.getElementById(id);
+  if (id === 'rank-unlock') el.style.display = 'flex';
+  else el.style.display = 'block';
+}
+function hide(id) { document.getElementById(id).style.display = 'none'; }
 
-  function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
-  document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = 'show';
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>t.className='', 2200);
+}
 
-  let toastTimer;
-  function showToast(msg, type='') {
-    const t = document.getElementById('toast');
-    t.textContent = msg; t.className = 'show ' + type;
-    clearTimeout(toastTimer);
-    toastTimer = setTimeout(() => t.className = '', 2200);
-  }
+function saveState() {
+  localStorage.setItem('falsedad_completed', JSON.stringify(state.completedModules));
+  localStorage.setItem('falsedad_scores', JSON.stringify(state.scores));
+  localStorage.setItem('falsedad_total', state.totalCorrect);
+}
 
-  function resetGame() { init(); }
-
-  // ── START ─────────────────────────────────────────────────────────────────
-  init();
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+hide('home'); hide('quiz-screen'); hide('module-complete'); hide('rank-unlock');
+renderHome();
 </script>
 </body>
 </html>
