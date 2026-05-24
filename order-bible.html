@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Libros de la Biblia — Clasificación</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #f8faff;
+      --blue: #1a6bbf;
+      --blue-light: #e8f1fb;
+      --blue-dark: #0d4a8a;
+      --text: #0d2a4a;
+      --text-soft: #4a6a8a;
+      --white: #ffffff;
+      --shadow: 0 4px 20px rgba(26,107,191,0.10);
+      --shadow-lg: 0 8px 40px rgba(26,107,191,0.18);
+
+      --ley:        #2e7d5e; --ley-bg:       #eaf7f2;
+      --hist-at:    #7b3fa0; --hist-at-bg:   #f5edfb;
+      --poe:        #c27c00; --poe-bg:       #fff8e6;
+      --prof-may:   #b03a2e; --prof-may-bg:  #fdecea;
+      --prof-men:   #1a6bbf; --prof-men-bg:  #e8f1fb;
+      --evan:       #1d7a4a; --evan-bg:      #e9f7ef;
+      --hist-nt:    #5c3d8f; --hist-nt-bg:   #f0eafa;
+      --pablo:      #0d6e8a; --pablo-bg:     #e4f4f8;
+      --epist:      #8a4a0d; --epist-bg:     #fdf0e4;
+      --prof-nt:    #a0174a; --prof-nt-bg:   #fde8f0;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ── HEADER ── */
+    header {
+      background: var(--white);
+      border-bottom: 2px solid var(--blue-light);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    header h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(1.1rem, 3vw, 1.7rem);
+      color: var(--blue-dark);
+    }
+    header h1 span { color: var(--blue); }
+    .header-right { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+
+    #score-badge {
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      font-weight: 600;
+      font-size: 0.88rem;
+      padding: 5px 14px;
+      border-radius: 20px;
+    }
+    #rank-badge {
+      font-weight: 700;
+      font-size: 0.88rem;
+      padding: 5px 14px;
+      border-radius: 20px;
+      transition: background 0.5s, color 0.5s, transform 0.3s;
+      background: #e8e8e8;
+      color: #555;
+    }
+    .btn {
+      padding: 7px 16px;
+      border-radius: 8px;
+      border: none;
+      font-family: 'DM Sans', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      touch-action: manipulation;
+    }
+    .btn-primary { background: var(--blue); color: #fff; }
+    .btn-primary:hover, .btn-primary:active { background: var(--blue-dark); }
+    .btn-outline { background: transparent; color: var(--blue); border: 2px solid var(--blue); }
+    .btn-outline:hover, .btn-outline:active { background: var(--blue-light); }
+
+    /* ── PROGRESS ── */
+    #progress-bar-wrap { height: 4px; background: var(--blue-light); }
+    #progress-bar { height: 4px; background: var(--blue); width: 0%; transition: width 0.5s ease; }
+
+    /* ── INSTRUCTION BANNER ── */
+    #instruction {
+      background: var(--blue-light);
+      color: var(--blue-dark);
+      text-align: center;
+      font-size: 0.82rem;
+      font-weight: 500;
+      padding: 7px 16px;
+      transition: background 0.3s, color 0.3s;
+    }
+    #instruction.selected {
+      background: var(--blue);
+      color: #fff;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    main {
+      display: grid;
+      grid-template-columns: 260px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 90px);
+    }
+
+    /* ── BOOKS POOL ── */
+    #pool-panel {
+      background: var(--white);
+      border-right: 2px solid var(--blue-light);
+      padding: 18px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    #pool-panel h2 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      color: var(--blue-dark);
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--blue-light);
+    }
+    #pool-panel p { font-size: 0.78rem; color: var(--text-soft); line-height: 1.5; }
+
+    #books-pool {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-content: flex-start;
+      min-height: 120px;
+      border: 2px dashed var(--blue-light);
+      border-radius: 12px;
+      padding: 10px;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    #books-pool.drop-target {
+      background: var(--blue-light);
+      border-color: var(--blue);
+    }
+
+    /* ── BOOK CHIP ── */
+    .book-chip {
+      position: relative;
+      background: var(--white);
+      border: 2px solid var(--blue-light);
+      color: var(--text);
+      font-size: 0.75rem;
+      font-weight: 500;
+      padding: 5px 10px;
+      border-radius: 20px;
+      cursor: pointer;
+      user-select: none;
+      touch-action: manipulation;
+      transition: all 0.18s;
+      box-shadow: 0 2px 6px rgba(26,107,191,0.07);
+      white-space: nowrap;
+    }
+    .book-chip:hover { border-color: var(--blue); color: var(--blue); transform: translateY(-2px); }
+    .book-chip:active { transform: scale(0.95); }
+
+    /* Selected state (tap to pick) */
+    .book-chip.selected {
+      border-color: var(--blue);
+      background: var(--blue);
+      color: #fff;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 18px rgba(26,107,191,0.35);
+      z-index: 10;
+    }
+    /* Drag ghost */
+    .book-chip.dragging { opacity: 0.35; transform: scale(0.92); }
+
+    /* Correct */
+    .book-chip.correct {
+      border-color: #2e7d5e;
+      background: #eaf7f2;
+      color: #2e7d5e;
+      cursor: default;
+      padding-right: 10px;
+    }
+    .book-chip.wrong-shake { animation: shake 0.4s ease; }
+
+    @keyframes shake {
+      0%,100% { transform: translateX(0); }
+      20% { transform: translateX(-6px); }
+      40% { transform: translateX(6px); }
+      60% { transform: translateX(-4px); }
+      80% { transform: translateX(4px); }
+    }
+
+    /* Remove btn */
+    .remove-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-left: 5px;
+      width: 15px; height: 15px;
+      background: #b03a2e;
+      color: #fff;
+      border-radius: 50%;
+      font-size: 9px;
+      font-weight: 700;
+      cursor: pointer;
+      vertical-align: middle;
+      flex-shrink: 0;
+      transition: background 0.15s;
+      touch-action: manipulation;
+    }
+    .remove-btn:hover, .remove-btn:active { background: #8b1a10; }
+
+    /* ── GROUPS AREA ── */
+    #groups-area {
+      padding: 18px;
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 16px;
+      align-content: start;
+    }
+
+    /* ── GROUP CARD ── */
+    .group-card {
+      border-radius: 14px;
+      border: 2px solid transparent;
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      transition: box-shadow 0.2s, transform 0.2s;
+      cursor: pointer;
+    }
+    .group-card.drop-target {
+      box-shadow: var(--shadow-lg);
+      transform: scale(1.02);
+      border-width: 3px;
+    }
+
+    .group-header {
+      padding: 9px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .group-header h3 { font-family: 'Playfair Display', serif; font-size: 0.9rem; font-weight: 700; }
+    .group-header .tag {
+      font-size: 0.68rem; font-weight: 600;
+      padding: 2px 8px; border-radius: 10px;
+      background: rgba(255,255,255,0.45);
+    }
+    .group-drop {
+      min-height: 70px;
+      padding: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      align-content: flex-start;
+    }
+    .group-count {
+      font-size: 0.7rem;
+      padding: 0 12px 7px;
+      opacity: 0.7;
+      font-weight: 500;
+    }
+
+    /* Group themes */
+    .g-ley      { border-color: var(--ley);      background: var(--ley-bg); }
+    .g-ley      .group-header { background: var(--ley); color: #fff; }
+    .g-hist-at  { border-color: var(--hist-at);  background: var(--hist-at-bg); }
+    .g-hist-at  .group-header { background: var(--hist-at); color: #fff; }
+    .g-poe      { border-color: var(--poe);      background: var(--poe-bg); }
+    .g-poe      .group-header { background: var(--poe); color: #fff; }
+    .g-prof-may { border-color: var(--prof-may); background: var(--prof-may-bg); }
+    .g-prof-may .group-header { background: var(--prof-may); color: #fff; }
+    .g-prof-men { border-color: var(--prof-men); background: var(--prof-men-bg); }
+    .g-prof-men .group-header { background: var(--prof-men); color: #fff; }
+    .g-evan     { border-color: var(--evan);     background: var(--evan-bg); }
+    .g-evan     .group-header { background: var(--evan); color: #fff; }
+    .g-hist-nt  { border-color: var(--hist-nt);  background: var(--hist-nt-bg); }
+    .g-hist-nt  .group-header { background: var(--hist-nt); color: #fff; }
+    .g-pablo    { border-color: var(--pablo);    background: var(--pablo-bg); }
+    .g-pablo    .group-header { background: var(--pablo); color: #fff; }
+    .g-epist    { border-color: var(--epist);    background: var(--epist-bg); }
+    .g-epist    .group-header { background: var(--epist); color: #fff; }
+    .g-prof-nt  { border-color: var(--prof-nt);  background: var(--prof-nt-bg); }
+    .g-prof-nt  .group-header { background: var(--prof-nt); color: #fff; }
+
+    /* ── MODAL ── */
+    #modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(13,42,74,0.55);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+    }
+    #modal-overlay.show { display: flex; }
+    #modal {
+      background: var(--white);
+      border-radius: 20px;
+      padding: 36px 32px;
+      max-width: 400px;
+      width: 90%;
+      text-align: center;
+      box-shadow: var(--shadow-lg);
+      animation: pop 0.3s cubic-bezier(.34,1.56,.64,1);
+    }
+    @keyframes pop { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    #modal .emoji { font-size: 3rem; margin-bottom: 12px; }
+    #modal h2 { font-family: 'Playfair Display', serif; font-size: 1.6rem; color: var(--blue-dark); margin-bottom: 8px; }
+    #modal p { color: var(--text-soft); margin-bottom: 20px; font-size: 0.95rem; line-height: 1.6; }
+    #modal .score-big { font-size: 2.2rem; font-weight: 700; color: var(--blue); margin: 8px 0 18px; }
+
+    /* ── TOAST ── */
+    #toast {
+      position: fixed;
+      bottom: 24px; left: 50%;
+      transform: translateX(-50%) translateY(80px);
+      background: var(--text);
+      color: #fff;
+      padding: 9px 22px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 500;
+      z-index: 300;
+      transition: transform 0.3s ease;
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); }
+    #toast.success { background: #2e7d5e; }
+    #toast.error   { background: #b03a2e; }
+
+    /* ── MOBILE LAYOUT ── */
+    @media (max-width: 680px) {
+      main {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+      }
+      #pool-panel {
+        border-right: none;
+        border-bottom: 2px solid var(--blue-light);
+        padding: 12px;
+      }
+      #pool-panel p { display: none; }
+      #books-pool { min-height: 80px; }
+      #groups-area {
+        padding: 12px;
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 10px;
+      }
+      .group-drop { min-height: 50px; }
+      .book-chip { font-size: 0.72rem; padding: 5px 9px; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>Libros de la <span>Biblia</span></h1>
+  <div class="header-right">
+    <div id="score-badge">✅ 0 / 66</div>
+    <div id="rank-badge">🗡️ Filisteo</div>
+    <button class="btn btn-outline" onclick="checkAll()">Verificar</button>
+    <button class="btn btn-primary" onclick="resetGame()">Reiniciar</button>
+  </div>
+</header>
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+<div id="instruction">👆 Toca un libro y luego toca el grupo donde pertenece</div>
+
+<main>
+  <aside id="pool-panel">
+    <h2>📚 Libros disponibles</h2>
+    <p>Toca un libro para seleccionarlo, luego toca el grupo donde pertenece.</p>
+    <div id="books-pool"></div>
+  </aside>
+  <section id="groups-area"></section>
+</main>
+
+<div id="modal-overlay">
+  <div id="modal">
+    <div class="emoji" id="modal-emoji">🎉</div>
+    <h2 id="modal-title">¡Completado!</h2>
+    <p id="modal-msg"></p>
+    <div class="score-big" id="modal-score"></div>
+    <button class="btn btn-primary" onclick="resetGame(); closeModal()">Jugar de nuevo</button>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+  // ── DATA ──────────────────────────────────────────────────────────────────
+  const GROUPS = [
+    { id:'ley',      label:'Ley',                tag:'AT', cls:'g-ley',
+      books:['Génesis','Éxodo','Levítico','Números','Deuteronomio'] },
+    { id:'hist-at',  label:'Historia',           tag:'AT', cls:'g-hist-at',
+      books:['Josué','Jueces','Ruth','1° Samuel','2° Samuel','1° Reyes','2° Reyes','1° Crónicas','2° Crónicas','Esdras','Nehemías','Ester'] },
+    { id:'poe',      label:'Poesía',             tag:'AT', cls:'g-poe',
+      books:['Job','Salmos','Proverbios','Eclesiastés','Cantares'] },
+    { id:'prof-may', label:'Profetas Mayores',   tag:'AT', cls:'g-prof-may',
+      books:['Isaías','Jeremías','Lamentaciones','Ezequiel','Daniel'] },
+    { id:'prof-men', label:'Profetas Menores',   tag:'AT', cls:'g-prof-men',
+      books:['Oseas','Joel','Amós','Abdías','Jonás','Miqueas','Nahum','Habacuc','Sofonías','Hageo','Zacarías','Malaquías'] },
+    { id:'evan',     label:'Evangelios',         tag:'NT', cls:'g-evan',
+      books:['Mateo','Marcos','Lucas','Juan'] },
+    { id:'hist-nt',  label:'Iglesia',            tag:'NT', cls:'g-hist-nt',
+      books:['Hechos'] },
+    { id:'pablo',    label:'Cartas de Pablo',    tag:'NT', cls:'g-pablo',
+      books:['Romanos','1° Corintios','2° Corintios','Gálatas','Efesios','Filipenses','Colosenses','1° Tesalonicenses','2° Tesalonicenses','1° Timoteo','2° Timoteo','Tito','Filemón'] },
+    { id:'epist',    label:'Epístolas Generales',tag:'NT', cls:'g-epist',
+      books:['Hebreos','Santiago','1° Pedro','2° Pedro','1° Juan','2° Juan','3° Juan','Judas'] },
+    { id:'prof-nt',  label:'Profecía',           tag:'NT', cls:'g-prof-nt',
+      books:['Apocalipsis'] },
+  ];
+
+  const ALL_BOOKS  = GROUPS.flatMap(g => g.books);
+  const BOOK_GROUP = {};
+  GROUPS.forEach(g => g.books.forEach(b => BOOK_GROUP[b] = g.id));
+
+  let placed      = {};       // book -> groupId
+  let correct     = new Set();
+  let selectedBook = null;    // currently selected book (tap mode)
+  let poolOrder   = [];       // stable order for pool chips
+
+  // ── INIT ──────────────────────────────────────────────────────────────────
+  function init() {
+    placed = {}; correct = new Set(); selectedBook = null;
+    poolOrder = shuffle(ALL_BOOKS); // shuffle ONCE at start
+    renderGroups();
+    renderPool();
+    updateScore();
+    updateInstruction();
+  }
+
+  function shuffle(arr) {
+    const a = [...arr];
+    for (let i = a.length-1; i>0; i--) {
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  // ── RENDER ────────────────────────────────────────────────────────────────
+  function renderGroups() {
+    const area = document.getElementById('groups-area');
+    area.innerHTML = '';
+    GROUPS.forEach(g => {
+      const card = document.createElement('div');
+      card.className = `group-card ${g.cls}`;
+      card.dataset.group = g.id;
+      card.innerHTML = `
+        <div class="group-header">
+          <h3>${g.label}</h3>
+          <span class="tag">${g.tag}</span>
+        </div>
+        <div class="group-drop" id="drop-${g.id}" data-group="${g.id}"></div>
+        <div class="group-count" id="count-${g.id}">0 / ${g.books.length}</div>
+      `;
+      // Tap-to-place on card
+      card.addEventListener('click', () => onGroupTap(g.id));
+      // Desktop drag-and-drop
+      const drop = card.querySelector('.group-drop');
+      drop.addEventListener('dragover', e => { e.preventDefault(); card.classList.add('drop-target'); });
+      drop.addEventListener('dragleave', () => card.classList.remove('drop-target'));
+      drop.addEventListener('drop', e => { e.preventDefault(); card.classList.remove('drop-target'); placeBook(e.dataTransfer.getData('book'), g.id); });
+      area.appendChild(card);
+    });
+  }
+
+  function renderPool() {
+    const pool = document.getElementById('books-pool');
+    pool.innerHTML = '';
+    poolOrder.forEach(book => {
+      if (!placed[book]) pool.appendChild(makeChip(book, false, false));
+    });
+    // Re-render placed books
+    GROUPS.forEach(g => {
+      const drop = document.getElementById(`drop-${g.id}`);
+      if (drop) drop.innerHTML = '';
+    });
+    Object.entries(placed).forEach(([book, gid]) => {
+      const drop = document.getElementById(`drop-${gid}`);
+      if (drop) drop.appendChild(makeChip(book, correct.has(book), true));
+    });
+    // Pool tap target: return selected book to pool
+    pool.addEventListener('click', e => {
+      if (e.target === pool && selectedBook) deselectBook();
+    });
+    // Pool drag-over
+    pool.addEventListener('dragover', e => { e.preventDefault(); pool.classList.add('drop-target'); });
+    pool.addEventListener('dragleave', () => pool.classList.remove('drop-target'));
+    pool.addEventListener('drop', e => {
+      e.preventDefault();
+      pool.classList.remove('drop-target');
+      const book = e.dataTransfer.getData('book');
+      if (book && !correct.has(book)) {
+        delete placed[book];
+        renderPool(); updateScore();
+      }
+    });
+    updateCounts();
+  }
+
+  function makeChip(book, isCorrect=false, inGroup=false) {
+    const chip = document.createElement('div');
+    chip.className = 'book-chip' + (isCorrect ? ' correct' : '');
+    if (selectedBook === book) chip.classList.add('selected');
+    chip.dataset.book = book;
+
+    const label = document.createElement('span');
+    label.textContent = book;
+    chip.appendChild(label);
+
+    if (inGroup && !isCorrect) {
+      const btn = document.createElement('span');
+      btn.className = 'remove-btn';
+      btn.textContent = '✕';
+      btn.title = 'Quitar libro';
+      btn.addEventListener('click', e => { e.stopPropagation(); returnToPool(book); });
+      chip.appendChild(btn);
+    }
+
+    if (!isCorrect) {
+      // Tap interaction
+      chip.addEventListener('click', e => { e.stopPropagation(); onChipTap(book, inGroup); });
+      // Desktop drag
+      chip.draggable = true;
+      chip.addEventListener('dragstart', e => {
+        e.dataTransfer.setData('book', book);
+        chip.classList.add('dragging');
+        if (selectedBook) deselectBook();
+      });
+      chip.addEventListener('dragend', () => chip.classList.remove('dragging'));
+    }
+
+    return chip;
+  }
+
+  // ── TAP LOGIC ─────────────────────────────────────────────────────────────
+  function onChipTap(book, inGroup) {
+    if (selectedBook === book) {
+      deselectBook();
+      return;
+    }
+    // Remove selected class from previous chip without re-rendering
+    if (selectedBook) {
+      const prev = document.querySelector(`.book-chip[data-book="${CSS.escape(selectedBook)}"]`);
+      if (prev) prev.classList.remove('selected');
+    }
+    selectedBook = book;
+    // Add selected class to new chip without re-rendering
+    const chip = document.querySelector(`.book-chip[data-book="${CSS.escape(book)}"]`);
+    if (chip) chip.classList.add('selected');
+    updateInstruction(book);
+  }
+
+  function onGroupTap(gid) {
+    if (!selectedBook) return;
+    placeBook(selectedBook, gid);
+    selectedBook = null;
+    updateInstruction();
+  }
+
+  function deselectBook() {
+    if (selectedBook) {
+      const chip = document.querySelector(`.book-chip[data-book="${CSS.escape(selectedBook)}"]`);
+      if (chip) chip.classList.remove('selected');
+    }
+    selectedBook = null;
+    updateInstruction();
+  }
+
+  // ── PLACE BOOK ────────────────────────────────────────────────────────────
+  function placeBook(book, gid) {
+    if (!book || correct.has(book)) return;
+    const expectedGid = BOOK_GROUP[book];
+    placed[book] = gid;
+
+    if (gid === expectedGid) {
+      correct.add(book);
+      showToast(`✅ ¡Correcto! "${book}"`, 'success');
+    } else {
+      correct.delete(book);
+      showToast(`❌ "${book}" no va ahí`, 'error');
+      setTimeout(() => {
+        const chip = document.querySelector(`[data-book="${book}"]`);
+        if (chip) { chip.classList.add('wrong-shake'); setTimeout(()=>chip.classList.remove('wrong-shake'),500); }
+      }, 50);
+    }
+
+    renderPool();
+    updateScore();
+    checkWin();
+  }
+
+  function returnToPool(book) {
+    delete placed[book];
+    correct.delete(book);
+    renderPool();
+    updateScore();
+  }
+
+  // ── UI HELPERS ────────────────────────────────────────────────────────────
+  function updateInstruction(book) {
+    const el = document.getElementById('instruction');
+    if (book) {
+      el.textContent = `📖 "${book}" seleccionado — toca el grupo donde pertenece`;
+      el.classList.add('selected');
+    } else {
+      el.textContent = '👆 Toca un libro y luego toca el grupo donde pertenece';
+      el.classList.remove('selected');
+    }
+  }
+
+  const RANKS = [
+    { min:  0, max: 10, label: '🗡️ Filisteo',       bg: '#e8e8e8', color: '#555555' },
+    { min: 11, max: 25, label: '🏛️ Fariseo',         bg: '#f5edfb', color: '#7b3fa0' },
+    { min: 26, max: 40, label: '🌍 Gentil',           bg: '#fff8e6', color: '#c27c00' },
+    { min: 41, max: 55, label: '🤝 Simpatizante',     bg: '#e4f4f8', color: '#0d6e8a' },
+    { min: 56, max: 65, label: '✝️ Discípulo',        bg: '#e9f7ef', color: '#1d7a4a' },
+    { min: 66, max: 66, label: '👑 Siervo de Cristo', bg: '#fff3cd', color: '#856404' },
+  ];
+
+  function getRank(n) {
+    return RANKS.find(r => n >= r.min && n <= r.max) || RANKS[0];
+  }
+
+  function updateScore() {
+    const n = correct.size;
+    document.getElementById('score-badge').textContent = `✅ ${n} / 66`;
+    document.getElementById('progress-bar').style.width = `${(n/66)*100}%`;
+    const rank = getRank(n);
+    const badge = document.getElementById('rank-badge');
+    const prev = badge.textContent;
+    badge.textContent = rank.label;
+    badge.style.background = rank.bg;
+    badge.style.color = rank.color;
+    // Pulse animation on rank change
+    if (prev !== rank.label) {
+      badge.style.transform = 'scale(1.18)';
+      setTimeout(() => badge.style.transform = 'scale(1)', 300);
+    }
+  }
+
+  function updateCounts() {
+    GROUPS.forEach(g => {
+      const inGroup = Object.entries(placed).filter(([,gid])=>gid===g.id).length;
+      const el = document.getElementById(`count-${g.id}`);
+      if (el) el.textContent = `${inGroup} / ${g.books.length}`;
+    });
+  }
+
+  function checkWin() {
+    if (correct.size === 66) setTimeout(() => showModal(true), 400);
+  }
+
+  function checkAll() {
+    showModal(false);
+  }
+
+  function showModal(isWin) {
+    const pct = Math.round((correct.size/66)*100);
+    document.getElementById('modal-emoji').textContent  = isWin ? '🏆' : pct >= 70 ? '🎯' : '📖';
+    document.getElementById('modal-title').textContent  = isWin ? '¡Completado!' : 'Progreso actual';
+    document.getElementById('modal-score').textContent  = `${correct.size} / 66`;
+    document.getElementById('modal-msg').textContent    = isWin
+      ? '¡Clasificaste todos los libros correctamente! Conoces muy bien tu Biblia.'
+      : `Tienes ${correct.size} libros en su lugar correcto. ¡Sigue intentando!`;
+    document.getElementById('modal-overlay').classList.add('show');
+  }
+
+  function closeModal() { document.getElementById('modal-overlay').classList.remove('show'); }
+  document.getElementById('modal-overlay').addEventListener('click', e => { if(e.target===e.currentTarget) closeModal(); });
+
+  let toastTimer;
+  function showToast(msg, type='') {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.className = 'show ' + type;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.className = '', 2200);
+  }
+
+  function resetGame() { init(); }
+
+  // ── START ─────────────────────────────────────────────────────────────────
+  init();
+</script>
+</body>
+</html>
