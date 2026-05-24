@@ -620,7 +620,19 @@ function buildOrder(q) {
   quiz.orderItems = items;
   quiz.orderSelected = [];
   const wrap = document.createElement('div');
-  wrap.innerHTML = `<div class="memory-instructions">Toca los elementos en el orden correcto (1 → último)</div>`;
+  // Header row: instructions + reset button
+  const header = document.createElement('div');
+  header.style.cssText = 'display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;gap:8px;';
+  header.innerHTML = `
+    <div class="memory-instructions" style="margin-bottom:0;flex:1;">Toca los elementos en el orden correcto (1 → último)</div>
+    <button id="order-reset-btn" onclick="resetOrder()" style="
+      background:transparent;border:1px solid #3a2e1e;color:var(--text-soft);
+      border-radius:8px;padding:5px 12px;font-family:'Cinzel',serif;font-size:0.68rem;
+      cursor:pointer;letter-spacing:1px;white-space:nowrap;flex-shrink:0;
+      touch-action:manipulation;transition:all 0.2s;
+    ">↺ Reiniciar</button>
+  `;
+  wrap.appendChild(header);
   const list = document.createElement('div'); list.className = 'order-list'; list.id = 'order-list';
   items.forEach((item,i) => {
     const el = document.createElement('div');
@@ -631,6 +643,18 @@ function buildOrder(q) {
   });
   wrap.appendChild(list);
   return wrap;
+}
+
+function resetOrder() {
+  if (quiz.answered) return;
+  quiz.orderSelected = [];
+  quiz.orderItems.forEach((_, i) => {
+    const el = document.querySelector(`[data-idx="${i}"]`);
+    if (el) {
+      el.classList.remove('selected-order', 'correct', 'wrong');
+      document.getElementById(`onum-${i}`).textContent = '·';
+    }
+  });
 }
 
 // ── INTERACTIONS ────────────────────────────────────────
@@ -687,28 +711,46 @@ function onOrderClick(idx) {
   if (quiz.answered) return;
   const el = document.querySelector(`[data-idx="${idx}"]`);
   if (el.classList.contains('correct') || el.classList.contains('wrong')) return;
-  if (quiz.orderSelected.includes(idx)) return;
+  // If already selected, tapping again deselects it and all after it
+  if (quiz.orderSelected.includes(idx)) {
+    const pos = quiz.orderSelected.indexOf(idx);
+    const toRemove = quiz.orderSelected.splice(pos);
+    toRemove.forEach(i => {
+      const removed = document.querySelector(`[data-idx="${i}"]`);
+      if (removed) { removed.classList.remove('selected-order'); document.getElementById(`onum-${i}`).textContent = '·'; }
+    });
+    return;
+  }
   quiz.orderSelected.push(idx);
   const num = quiz.orderSelected.length;
   document.getElementById(`onum-${idx}`).textContent = num;
   el.classList.add('selected-order');
+  // Update confirm button text when all selected
   const q = MODULES[quiz.moduleIdx].questions[quiz.questionIdx];
   if (quiz.orderSelected.length === q.items.length) {
-    // Check order
-    const correct = quiz.orderSelected.every((selIdx, pos) => {
-      return quiz.orderItems[selIdx].origIdx === q.correctOrder[pos];
-    });
-    quiz.orderSelected.forEach((selIdx, pos) => {
-      const el2 = document.querySelector(`[data-idx="${selIdx}"]`);
-      const isCorrect = quiz.orderItems[selIdx].origIdx === q.correctOrder[pos];
-      el2.classList.remove('selected-order');
-      el2.classList.add(isCorrect ? 'correct' : 'wrong');
-    });
-    quiz.answered = true;
-    showFeedback(correct, q.feedback);
-    if (correct) quiz.correct++;
-    updateNextBtn();
+    const btn = document.getElementById('next-btn');
+    if (btn) btn.textContent = 'Confirmar orden ✓';
   }
+}
+
+function checkOrderAnswer() {
+  const q = MODULES[quiz.moduleIdx].questions[quiz.questionIdx];
+  if (quiz.orderSelected.length < q.items.length) { showToast('Ordena todos los elementos primero'); return false; }
+  const correct = quiz.orderSelected.every((selIdx, pos) => {
+    return quiz.orderItems[selIdx].origIdx === q.correctOrder[pos];
+  });
+  quiz.orderSelected.forEach((selIdx, pos) => {
+    const el2 = document.querySelector(`[data-idx="${selIdx}"]`);
+    const isCorrect = quiz.orderItems[selIdx].origIdx === q.correctOrder[pos];
+    el2.classList.remove('selected-order');
+    el2.classList.add(isCorrect ? 'correct' : 'wrong');
+  });
+  // Hide reset button after confirming
+  const resetBtn = document.getElementById('order-reset-btn');
+  if (resetBtn) resetBtn.style.display = 'none';
+  showFeedback(correct, q.feedback);
+  if (correct) quiz.correct++;
+  return true;
 }
 
 function onNextOrConfirm() {
@@ -746,8 +788,11 @@ function onNextOrConfirm() {
       inp.disabled = true;
       if (correct) quiz.correct++;
       showFeedback(correct, q.feedback);
-    } else if (q.type === 'memory' || q.type === 'order') {
+    } else if (q.type === 'memory') {
       showToast('Completa la actividad primero'); return;
+    } else if (q.type === 'order') {
+      const ok = checkOrderAnswer();
+      if (!ok) return;
     }
     quiz.answered = true;
     mcSelected = null; tfSelected = null;
